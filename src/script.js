@@ -2,7 +2,7 @@ function main(config, profileName) {
     if (!Array.isArray(config.proxies)) config.proxies = [];
 
     const frontGroupName = "🚀 前置节点";
-    const finalExitGroupName = "⚡ 最终出口";
+    const finalExitGroupName = "🌍 全局出口";
     const aiGroupName = "🤖 AI服务-链式";
     const mailGroupName = "✉️ 邮件服务";
     const homeExitName = "🏠 家宽出口";
