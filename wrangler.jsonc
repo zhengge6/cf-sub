@@ -7,9 +7,9 @@
     "nodejs_compat"
   ],
   "vars": {
-    "SOCKS_SERVER": "127.0.0.1",
-    "SOCKS_PORT": "1080",
-    "SOCKS_USERNAME": "your_username",
-    "SOCKS_PASSWORD": "your_password"
+    "SOCKS_SERVER": "2603:1040:401::206",
+    "SOCKS_PORT": "41025",
+    "SOCKS_USERNAME": "proxyuser",
+    "SOCKS_PASSWORD": "3SuKneO3gKnSKKJCk78"
   }
 }
