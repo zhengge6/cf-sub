@@ -250,6 +250,9 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,poe.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,x.ai,${aiGroupName}`,
         `DOMAIN-SUFFIX,grok.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,whatsapp.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,whatsapp.net,${aiGroupName}`,
+        `DOMAIN-SUFFIX,wa.me,${aiGroupName}`,
         `DOMAIN-SUFFIX,netflix.com,${finalExitGroupName}`,
 
         ...processNames.map(name =>
