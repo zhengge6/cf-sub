@@ -143,7 +143,10 @@ function main(config, profileName) {
     config["proxy-groups"] = [
         {
             name: frontGroupName,
-            type: "select",
+            type: "url-test",
+            url: "http://www.gstatic.com/generate_204",
+            interval: 300,
+            tolerance: 50,
             proxies: frontProxyNames.length ? frontProxyNames : ["DIRECT"]
         },
         {
