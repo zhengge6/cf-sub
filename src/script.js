@@ -3,6 +3,7 @@ function main(config, profileName) {
 
     const frontGroupName = "🚀 前置节点";
     const finalExitGroupName = "⚡ 最终出口";
+    const aiGroupName = "🤖 AI服务-链式";
     const mailGroupName = "✉️ 邮件服务";
     const homeExitName = "🏠 家宽出口";
 
@@ -160,6 +161,15 @@ function main(config, profileName) {
             ])
         },
         {
+            name: aiGroupName,
+            type: "select",
+            proxies: unique([
+                socksNodeName,
+                finalExitGroupName,
+                "DIRECT"
+            ])
+        },
+        {
             name: mailGroupName,
             type: "select",
             proxies: unique([
@@ -226,10 +236,20 @@ function main(config, profileName) {
         ),
 
         `DOMAIN-KEYWORD,ipinfo,${finalExitGroupName}`,
-        `DOMAIN-SUFFIX,openai.com,${finalExitGroupName}`,
-        `DOMAIN-SUFFIX,chatgpt.com,${finalExitGroupName}`,
-        `DOMAIN-SUFFIX,oaistatic.com,${finalExitGroupName}`,
-        `DOMAIN-SUFFIX,oaiusercontent.com,${finalExitGroupName}`,
+        `DOMAIN-SUFFIX,openai.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,chatgpt.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,oaistatic.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,oaiusercontent.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,anthropic.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,claude.ai,${aiGroupName}`,
+        `DOMAIN,gemini.google.com,${aiGroupName}`,
+        `DOMAIN,aistudio.google.com,${aiGroupName}`,
+        `DOMAIN,makersuite.google.com,${aiGroupName}`,
+        `DOMAIN,generativelanguage.googleapis.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,perplexity.ai,${aiGroupName}`,
+        `DOMAIN-SUFFIX,poe.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,x.ai,${aiGroupName}`,
+        `DOMAIN-SUFFIX,grok.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,netflix.com,${finalExitGroupName}`,
 
         ...processNames.map(name =>
