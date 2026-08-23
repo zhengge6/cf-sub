@@ -254,6 +254,9 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,whatsapp.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,whatsapp.net,${aiGroupName}`,
         `DOMAIN-SUFFIX,wa.me,${aiGroupName}`,
+        `DOMAIN-SUFFIX,kraken.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,kraken.net,${aiGroupName}`,
+        `DOMAIN-SUFFIX,kraken.pro,${aiGroupName}`,
         `DOMAIN-SUFFIX,netflix.com,${finalExitGroupName}`,
 
         ...processNames.map(name =>
