@@ -88,10 +88,11 @@ function main(config, profileName) {
     const customSocks = (typeof CUSTOM_SOCKS !== 'undefined' && CUSTOM_SOCKS) ? CUSTOM_SOCKS : {};
 
     const socksType = (customSocks.type || (typeof SOCKS_TYPE !== 'undefined' ? SOCKS_TYPE : "socks5")).toLowerCase();
-    const socksServer = customSocks.server || ((typeof SOCKS_SERVER !== 'undefined' && SOCKS_SERVER) ? SOCKS_SERVER : "2603:1040:401::206");
-    const socksPort = customSocks.port ? Number(customSocks.port) : ((typeof SOCKS_PORT !== 'undefined' && SOCKS_PORT) ? Number(SOCKS_PORT) : 41025);
-    const socksUsername = customSocks.username || ((typeof SOCKS_USERNAME !== 'undefined' && SOCKS_USERNAME) ? SOCKS_USERNAME : "proxyuser");
-    const socksPassword = customSocks.password || ((typeof SOCKS_PASSWORD !== 'undefined' && SOCKS_PASSWORD) ? SOCKS_PASSWORD : "3SuKneO3gKnSKKJCk78");
+    // 硬编码默认优先，query 参数可临时覆盖；忽略环境变量（避免占位符污染）
+    const socksServer = customSocks.server || "2603:1040:401::206";
+    const socksPort = customSocks.port ? Number(customSocks.port) : 41025;
+    const socksUsername = customSocks.username || "proxyuser";
+    const socksPassword = customSocks.password || "3SuKneO3gKnSKKJCk78";
     const socksCipher = customSocks.cipher || ((typeof SOCKS_CIPHER !== 'undefined' && SOCKS_CIPHER) ? SOCKS_CIPHER : "chacha20-ietf-poly1305");
     const socksUuid = customSocks.uuid || ((typeof SOCKS_UUID !== 'undefined' && SOCKS_UUID) ? SOCKS_UUID : "");
     const socksSni = customSocks.sni || ((typeof SOCKS_SNI !== 'undefined' && SOCKS_SNI) ? SOCKS_SNI : "");
