@@ -144,9 +144,11 @@ function main(config, profileName) {
         {
             name: frontGroupName,
             type: "url-test",
-            url: "http://www.gstatic.com/generate_204",
+            url: "http://cp.cloudflare.com/generate_204",
             interval: 300,
             tolerance: 50,
+            lazy: true,
+            fallback: frontProxyNames.length ? frontProxyNames[0] : "DIRECT",
             proxies: frontProxyNames.length ? frontProxyNames : ["DIRECT"]
         },
         {
