@@ -157,8 +157,8 @@ function main(config, profileName) {
             name: finalExitGroupName,
             type: "select",
             proxies: unique([
-                socksNodeName,
-                frontGroupName
+                frontGroupName,
+                socksNodeName
             ])
         },
         {
