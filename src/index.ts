@@ -35,6 +35,55 @@ interface KVNamespaceLike {
   delete(request: Request): Promise<boolean>;
 }
 
+// REALITY 测试订阅拉取统计（Cache API 计数器）
+const STAT_KEY = 'https://cf-sub-internal.invalid/__realtrystats';
+
+interface RealityStats {
+  total: number;
+  days: Record<string, number>;
+  last: string;
+}
+
+function statDay(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+async function readStats(cache: KVNamespaceLike): Promise<RealityStats> {
+  const cached = await cache.match(new Request(STAT_KEY));
+  if (!cached) return { total: 0, days: {}, last: '' };
+  try {
+    return await cached.json();
+  } catch {
+    return { total: 0, days: {}, last: '' };
+  }
+}
+
+async function bumpStats(ctx: ExecutionContext): Promise<void> {
+  const cache = caches.default as unknown as KVNamespaceLike;
+  try {
+    const s = await readStats(cache);
+    s.total += 1;
+    const d = statDay();
+    s.days[d] = (s.days[d] || 0) + 1;
+    s.last = new Date().toISOString();
+    const keys = Object.keys(s.days).sort();
+    while (keys.length > 30) delete s.days[keys.shift() as string];
+    await cache.put(
+      new Request(STAT_KEY),
+      new Response(JSON.stringify(s), { headers: { 'Cache-Control': 'public, max-age=31536000' } })
+    );
+  } catch {
+    // 统计失败不影响主流程
+  }
+}
+
+function utf8b64(s: string): string {
+  const bytes = new TextEncoder().encode(s);
+  let bin = '';
+  bytes.forEach((b) => (bin += String.fromCharCode(b)));
+  return btoa(bin);
+}
+
 async function appendLog(ctx: ExecutionContext, entry: Record<string, unknown>): Promise<void> {
   const cache = caches.default as unknown as KVNamespaceLike;
   try {
@@ -369,6 +418,13 @@ rules:
   - RULE-SET,proxy,🌍 全局出口
   - MATCH,🌍 全局出口
 `;
+      const started = Date.now();
+      const statsCache = caches.default as unknown as KVNamespaceLike;
+      const st = await readStats(statsCache);
+      ctx.waitUntil(bumpStats(ctx));
+      ctx.waitUntil(
+        appendLog(ctx, { status: 200, durMs: Date.now() - started, cache: 'direct', path: '/sub?only=reality' })
+      );
       return new Response(yaml, {
         status: 200,
         headers: {
@@ -376,7 +432,26 @@ rules:
           'Cache-Control': 'no-store',
           'Access-Control-Allow-Origin': '*',
           'profile-update-interval': '1',
+          'profile-title': 'base64:' + utf8b64('🧪 REALITY 测试订阅'),
+          'Content-Disposition': 'attachment; filename="reality-test.yaml"',
+          'X-Reality-Fetches': String(st.total + 1),
         },
+      });
+    }
+
+    // REALITY 测试订阅拉取统计：/stats
+    if (url.pathname === '/stats') {
+      const cache = caches.default as unknown as KVNamespaceLike;
+      const s = await readStats(cache);
+      const d = statDay();
+      const body =
+        `REALITY 订阅拉取统计\n` +
+        `总次数: ${s.total}\n` +
+        `今日(${d}): ${s.days[d] || 0}\n` +
+        `最近一次: ${s.last || '-'}\n`;
+      return new Response(body, {
+        status: 200,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
       });
     }
 
