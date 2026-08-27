@@ -148,6 +148,7 @@ function main(config, profileName) {
         network: "tcp",
         tls: true,
         udp: true,
+        "ip-version": "ipv6",
         flow: "xtls-rprx-vision",
         "client-fingerprint": "chrome"
     };
