@@ -114,11 +114,20 @@ export async function handleRequest(request: Request, env: Env): Promise<Respons
       };
     }
 
-    // 下载订阅
+    // 下载订阅（失败时回吐 _bk 副本，避免机场抽风导致刷新失败）
     let subResult;
     try {
       subResult = await fetchSubscription(subUrl, userAgent);
     } catch {
+      const backupUrl = new URL(url.origin + url.pathname + url.search);
+      backupUrl.searchParams.set('_bk', '1');
+      const stale = await caches.default.match(new Request(backupUrl.toString()));
+      if (stale) {
+        return new Response(stale.body, {
+          status: 200,
+          headers: { ...Object.fromEntries(stale.headers.entries()), 'X-Sub-Cache': 'upstream-stale' },
+        });
+      }
       return new Response(
         JSON.stringify({
           success: false,
