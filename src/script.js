@@ -301,6 +301,7 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,oaistatic.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,oaiusercontent.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,anthropic.com,${aiGroupName}`,
+        `DOMAIN-SUFFIX,claude.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,claude.ai,${aiGroupName}`,
         `DOMAIN,gemini.google.com,${aiGroupName}`,
         `DOMAIN,aistudio.google.com,${aiGroupName}`,
