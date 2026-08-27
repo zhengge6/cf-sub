@@ -227,11 +227,7 @@ function main(config, profileName) {
                 ...(normalFrontNames.length
                     ? [{
                         name: "🌐 普通线路",
-                        type: "url-test",
-                        url: "http://cp.cloudflare.com/generate_204",
-                        interval: 300,
-                        tolerance: 50,
-                        lazy: true,
+                        type: "select",
                         proxies: normalFrontNames
                     }]
                     : [])
