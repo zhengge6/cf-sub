@@ -65,6 +65,8 @@ function main(config, profileName) {
     config.proxies.forEach((proxy, index) => {
         if (!proxy || !proxy.name) return;
         if (proxy.name === homeExitName || proxy.name.includes("家宽出口") || proxy.name.includes("日本出口")) return;
+        // 过滤机场免费体验节点
+        if (/^免费/i.test(proxy.name)) return;
 
         const baseName = formatNodeName(proxy.name) || `节点 ${index + 1}`;
         const duplicateIndex = (usedSourceNames.get(baseName) || 0) + 1;
@@ -199,18 +201,53 @@ function main(config, profileName) {
         westusNodeName
     ]);
 
+    // 前置分层：优先 IEPL/IPLC/专线标记节点（名称匹配）
+    const FRONT_PREF = /(IEPL|IPLC|专线)/i;
+    const ieplFrontNames = frontProxyNames.filter(n => FRONT_PREF.test(n));
+    const normalFrontNames = frontProxyNames.filter(n => !FRONT_PREF.test(n));
+
     // 策略组定义（带 Emoji 图标）
     config["proxy-groups"] = [
-        {
-            name: frontGroupName,
-            type: "url-test",
-            url: "http://cp.cloudflare.com/generate_204",
-            interval: 300,
-            tolerance: 50,
-            lazy: true,
-            fallback: frontProxyNames.length ? frontProxyNames[0] : "DIRECT",
-            proxies: frontProxyNames.length ? frontProxyNames : ["DIRECT"]
-        },
+        ...(ieplFrontNames.length
+            ? [
+                {
+                    name: frontGroupName,
+                    type: "select",
+                    proxies: ["⚡ IEPL线路", ...(normalFrontNames.length ? ["🌐 普通线路"] : [])]
+                },
+                {
+                    name: "⚡ IEPL线路",
+                    type: "url-test",
+                    url: "http://cp.cloudflare.com/generate_204",
+                    interval: 300,
+                    tolerance: 50,
+                    lazy: true,
+                    proxies: ieplFrontNames
+                },
+                ...(normalFrontNames.length
+                    ? [{
+                        name: "🌐 普通线路",
+                        type: "url-test",
+                        url: "http://cp.cloudflare.com/generate_204",
+                        interval: 300,
+                        tolerance: 50,
+                        lazy: true,
+                        proxies: normalFrontNames
+                    }]
+                    : [])
+              ]
+            : [
+                {
+                    name: frontGroupName,
+                    type: "url-test",
+                    url: "http://cp.cloudflare.com/generate_204",
+                    interval: 300,
+                    tolerance: 50,
+                    lazy: true,
+                    fallback: frontProxyNames.length ? frontProxyNames[0] : "DIRECT",
+                    proxies: frontProxyNames.length ? frontProxyNames : ["DIRECT"]
+                }
+              ]),
         {
             name: finalExitGroupName,
             type: "select",
@@ -294,6 +331,41 @@ function main(config, profileName) {
         };
     });
 
+    // 细分 mrs 类目（数据同源 Loyalsoldier/v2ray-rules-dat 背后的 v2fly 社区域名库）
+    const metaDomainSets = [
+        "category-ai-chat-!cn",
+        "telegram",
+        "twitter",
+        "facebook",
+        "instagram",
+        "tiktok",
+        "github",
+        "gitlab",
+        "microsoft",
+        "netflix",
+        "disney"
+    ];
+    const aiChatSetName = "category-ai-chat-!cn";
+    const telegramDomainSet = "telegram";
+    metaDomainSets.forEach(name => {
+        config["rule-providers"][name] = {
+            type: "http",
+            format: "mrs",
+            behavior: "domain",
+            url: `https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/${name}.mrs`,
+            path: `./ruleset/${name}.mrs`,
+            interval: 86400
+        };
+    });
+    config["rule-providers"]["telegramcidr"] = {
+        type: "http",
+        format: "mrs",
+        behavior: "ipcidr",
+        url: "https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/telegramcidr.mrs",
+        path: "./ruleset/telegramcidr.mrs",
+        interval: 86400
+    };
+
     const rules = [
         ...blockedDomains.map(domain =>
             `DOMAIN,${domain},REJECT`
@@ -315,6 +387,8 @@ function main(config, profileName) {
         ),
 
         `DOMAIN-KEYWORD,ipinfo,${finalExitGroupName}`,
+        // AI 类目统一走 AI 链式组（mrs 数据自动覆盖 claude/openai/gemini/poe/grok 等）
+        `RULE-SET,${aiChatSetName},${aiGroupName}`,
         `DOMAIN-SUFFIX,openai.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,chatgpt.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,oaistatic.com,${aiGroupName}`,
@@ -336,7 +410,6 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,kraken.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,kraken.net,${aiGroupName}`,
         `DOMAIN-SUFFIX,kraken.pro,${aiGroupName}`,
-        `DOMAIN-SUFFIX,netflix.com,${finalExitGroupName}`,
 
         ...processNames.map(name =>
             `PROCESS-NAME,${name},${finalExitGroupName}`
@@ -349,6 +422,19 @@ function main(config, profileName) {
         ...proxyDomainSuffixes.map(domain =>
             `DOMAIN-SUFFIX,${domain},${finalExitGroupName}`
         ),
+
+        // 细分类目 mrs 规则集（v2fly 社区库同源）→ 全局出口
+        `RULE-SET,twitter,${finalExitGroupName}`,
+        `RULE-SET,facebook,${finalExitGroupName}`,
+        `RULE-SET,instagram,${finalExitGroupName}`,
+        `RULE-SET,tiktok,${finalExitGroupName}`,
+        `RULE-SET,github,${finalExitGroupName}`,
+        `RULE-SET,gitlab,${finalExitGroupName}`,
+        `RULE-SET,microsoft,${finalExitGroupName}`,
+        `RULE-SET,netflix,${finalExitGroupName}`,
+        `RULE-SET,disney,${finalExitGroupName}`,
+        `RULE-SET,${telegramDomainSet},${finalExitGroupName}`,
+        `RULE-SET,telegramcidr,${finalExitGroupName},no-resolve`,
 
         "RULE-SET,reject,REJECT",
         "RULE-SET,private,DIRECT",
