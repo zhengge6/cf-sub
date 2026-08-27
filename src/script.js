@@ -240,6 +240,24 @@ function main(config, profileName) {
         }
     ];
 
+    // 客户端体验参数：上游机场 yaml 普遍缺失，缺省时补齐（对齐成熟模板）
+    config["unified-delay"] = true;
+    config["tcp-concurrent"] = true;
+    if (!config["global-client-fingerprint"]) {
+        config["global-client-fingerprint"] = "chrome";
+    }
+    // TLS/HTTP 嗅探：把 SNI 还原成域名参与分流，raw-IP 连接不再只靠 GeoIP 猜
+    if (!config.sniffer) {
+        config.sniffer = {
+            enable: true,
+            "parse-pure-ip": true,
+            sniff: {
+                TLS: { ports: [443, 8443] },
+                HTTP: { ports: [80, 8080] }
+            }
+        };
+    }
+
     delete config["proxy-providers"];
     delete config["sub-rules"];
     config["rule-providers"] = {};
