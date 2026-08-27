@@ -155,8 +155,11 @@ export async function handleRequest(request: Request, env: Env): Promise<Respons
         'Cache-Control': 'public, max-age=300',
         // 允许浏览器跨域读取（UI 调试页面 fetch 同源，但明确声明更安全）
         'Access-Control-Allow-Origin': '*',
+        // 客户端导入时的显示名（FlClash/ClashMeta 等读取）
+        'profile-title': 'base64:Q0YtU3ViIOmTvuW8j+S7o+eQhg==',
+        'Content-Disposition': 'attachment; filename="cf-sub.yaml"',
         // 必须显式暴露自定义响应头，否则浏览器 JS 无法读取
-        'Access-Control-Expose-Headers': 'subscription-userinfo, Subscription-Userinfo, profile-update-interval, Profile-Update-Interval',
+        'Access-Control-Expose-Headers': 'subscription-userinfo, Subscription-Userinfo, profile-update-interval, Profile-Update-Interval, profile-title, Content-Disposition',
       };
 
       // 原样透传剩余流量与更新间隔 Response Headers
