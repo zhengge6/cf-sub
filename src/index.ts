@@ -90,7 +90,7 @@ export default {
     // 调试端点：仅含两台自建 REALITY 节点的最小 Clash 配置。
     // 节点参数必须与 src/script.js 中 realityClientBase/两个节点保持同步。
     if (url.pathname === '/sub' && url.searchParams.get('only') === 'reality') {
-      const yaml = `# CF-Sub REALITY isolation test profile
+      const yaml = `# CF-Sub REALITY isolation test profile (meta-rules-dat routing)
 mixed-port: 7890
 allow-lan: false
 mode: rule
@@ -129,13 +129,245 @@ proxies:
     reality-opts:
       public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
 proxy-groups:
-  - name: 🧪 REALITY测试
+  - name: 🌍 全局出口
     type: select
     proxies:
       - 🇯🇵 日本-REALITY
       - 🇺🇸 美西-REALITY
+  - name: 🤖 AI服务-链式
+    type: select
+    proxies:
+      - 🌍 全局出口
+      - 🇯🇵 日本-REALITY
+      - 🇺🇸 美西-REALITY
+  - name: ✉️ 邮件服务
+    type: select
+    proxies:
+      - 🌍 全局出口
+      - 🇯🇵 日本-REALITY
+      - 🇺🇸 美西-REALITY
+rule-providers:
+  reject:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/reject.txt
+    path: ./ruleset/reject.yaml
+    interval: 86400
+  icloud:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/icloud.txt
+    path: ./ruleset/icloud.yaml
+    interval: 86400
+  apple:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/apple.txt
+    path: ./ruleset/apple.yaml
+    interval: 86400
+  google:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt
+    path: ./ruleset/google.yaml
+    interval: 86400
+  proxy:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/proxy.txt
+    path: ./ruleset/proxy.yaml
+    interval: 86400
+  direct:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/direct.txt
+    path: ./ruleset/direct.yaml
+    interval: 86400
+  private:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt
+    path: ./ruleset/private.yaml
+    interval: 86400
+  gfw:
+    type: http
+    behavior: domain
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/gfw.txt
+    path: ./ruleset/gfw.yaml
+    interval: 86400
+  cncidr:
+    type: http
+    behavior: ipcidr
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/cncidr.txt
+    path: ./ruleset/cncidr.yaml
+    interval: 86400
+  lancidr:
+    type: http
+    behavior: ipcidr
+    url: https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt
+    path: ./ruleset/lancidr.yaml
+    interval: 86400
+  category-ai-chat-!cn:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/category-ai-chat-!cn.mrs
+    path: ./ruleset/category-ai-chat-!cn.mrs
+    interval: 86400
+  telegram:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/telegram.mrs
+    path: ./ruleset/telegram.mrs
+    interval: 86400
+  twitter:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/twitter.mrs
+    path: ./ruleset/twitter.mrs
+    interval: 86400
+  facebook:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/facebook.mrs
+    path: ./ruleset/facebook.mrs
+    interval: 86400
+  instagram:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/instagram.mrs
+    path: ./ruleset/instagram.mrs
+    interval: 86400
+  tiktok:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/tiktok.mrs
+    path: ./ruleset/tiktok.mrs
+    interval: 86400
+  github:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/github.mrs
+    path: ./ruleset/github.mrs
+    interval: 86400
+  gitlab:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/gitlab.mrs
+    path: ./ruleset/gitlab.mrs
+    interval: 86400
+  microsoft:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/microsoft.mrs
+    path: ./ruleset/microsoft.mrs
+    interval: 86400
+  netflix:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/netflix.mrs
+    path: ./ruleset/netflix.mrs
+    interval: 86400
+  disney:
+    type: http
+    format: mrs
+    behavior: domain
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/disney.mrs
+    path: ./ruleset/disney.mrs
+    interval: 86400
+  telegramcidr:
+    type: http
+    format: mrs
+    behavior: ipcidr
+    url: https://testingcf.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geoip/telegramcidr.mrs
+    path: ./ruleset/telegramcidr.mrs
+    interval: 86400
 rules:
-  - MATCH,🧪 REALITY测试
+  - DOMAIN,telemetry.open-design.ai,REJECT
+  - DOMAIN,us.i.posthog.com,REJECT
+  - PROCESS-NAME,Mail,✉️ 邮件服务
+  - PROCESS-NAME,accountsd,✉️ 邮件服务
+  - DST-PORT,993,✉️ 邮件服务
+  - DST-PORT,465,✉️ 邮件服务
+  - DST-PORT,587,✉️ 邮件服务
+  - DST-PORT,143,✉️ 邮件服务
+  - DOMAIN-SUFFIX,example.com,DIRECT
+  - DOMAIN-KEYWORD,ipinfo,🌍 全局出口
+  - RULE-SET,category-ai-chat-!cn,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,openai.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,chatgpt.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,oaistatic.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,claude.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI服务-链式
+  - DOMAIN,gemini.google.com,🤖 AI服务-链式
+  - DOMAIN,aistudio.google.com,🤖 AI服务-链式
+  - DOMAIN,makersuite.google.com,🤖 AI服务-链式
+  - DOMAIN,generativelanguage.googleapis.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,perplexity.ai,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,poe.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,x.ai,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,grok.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,whatsapp.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,whatsapp.net,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,wa.me,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,kraken.com,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,kraken.net,🤖 AI服务-链式
+  - DOMAIN-SUFFIX,kraken.pro,🤖 AI服务-链式
+  - PROCESS-NAME,tor,🌍 全局出口
+  - PROCESS-NAME,tor.real,🌍 全局出口
+  - PROCESS-NAME,Tor Browser,🌍 全局出口
+  - PROCESS-NAME,lyrebird,🌍 全局出口
+  - PROCESS-NAME,obfs4proxy,🌍 全局出口
+  - PROCESS-NAME,Telegram,🌍 全局出口
+  - PROCESS-NAME,Discord,🌍 全局出口
+  - PROCESS-NAME,steam_osx,🌍 全局出口
+  - IP-CIDR,91.108.4.0/22,🌍 全局出口,no-resolve
+  - IP-CIDR,91.108.8.0/22,🌍 全局出口,no-resolve
+  - IP-CIDR,91.108.56.0/22,🌍 全局出口,no-resolve
+  - IP-CIDR,149.154.160.0/20,🌍 全局出口,no-resolve
+  - DOMAIN-SUFFIX,brew.sh,🌍 全局出口
+  - DOMAIN-SUFFIX,github.com,🌍 全局出口
+  - DOMAIN-SUFFIX,githubusercontent.com,🌍 全局出口
+  - DOMAIN-SUFFIX,ghcr.io,🌍 全局出口
+  - DOMAIN-SUFFIX,pypi.org,🌍 全局出口
+  - DOMAIN-SUFFIX,files.pythonhosted.org,🌍 全局出口
+  - DOMAIN-SUFFIX,gstatic.com,🌍 全局出口
+  - DOMAIN-SUFFIX,apple.com,🌍 全局出口
+  - DOMAIN-SUFFIX,cdn-apple.com,🌍 全局出口
+  - RULE-SET,twitter,🌍 全局出口
+  - RULE-SET,facebook,🌍 全局出口
+  - RULE-SET,instagram,🌍 全局出口
+  - RULE-SET,tiktok,🌍 全局出口
+  - RULE-SET,github,🌍 全局出口
+  - RULE-SET,gitlab,🌍 全局出口
+  - RULE-SET,microsoft,🌍 全局出口
+  - RULE-SET,netflix,🌍 全局出口
+  - RULE-SET,disney,🌍 全局出口
+  - RULE-SET,telegram,🌍 全局出口
+  - RULE-SET,telegramcidr,🌍 全局出口,no-resolve
+  - RULE-SET,reject,REJECT
+  - RULE-SET,private,DIRECT
+  - RULE-SET,lancidr,DIRECT
+  - RULE-SET,direct,DIRECT
+  - RULE-SET,cncidr,DIRECT
+  - GEOIP,CN,DIRECT
+  - RULE-SET,google,🌍 全局出口
+  - RULE-SET,icloud,🌍 全局出口
+  - RULE-SET,apple,🌍 全局出口
+  - RULE-SET,gfw,🌍 全局出口
+  - RULE-SET,proxy,🌍 全局出口
+  - MATCH,🌍 全局出口
 `;
       return new Response(yaml, {
         status: 200,
