@@ -371,6 +371,7 @@ rule-providers:
     path: ./ruleset/telegramcidr.mrs
     interval: 86400
 rules:
+  - PROCESS-NAME,com.kraken.pay.app,🤖 AI服务
   - DOMAIN,telemetry.open-design.ai,REJECT
   - DOMAIN,us.i.posthog.com,REJECT
   - PROCESS-NAME,Mail,✉️ 邮件服务
