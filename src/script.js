@@ -65,8 +65,8 @@ function main(config, profileName) {
     config.proxies.forEach((proxy, index) => {
         if (!proxy || !proxy.name) return;
         if (proxy.name === homeExitName || proxy.name.includes("家宽出口") || proxy.name.includes("日本出口")) return;
-        // 过滤机场免费体验节点
-        if (/^免费/i.test(proxy.name)) return;
+        // 过滤机场免费体验节点（名称形如 "🇯🇵 免费-日本X"，emoji 前缀故不可锚定开头）
+        if (/免费/.test(proxy.name)) return;
 
         const baseName = formatNodeName(proxy.name) || `节点 ${index + 1}`;
         const duplicateIndex = (usedSourceNames.get(baseName) || 0) + 1;
