@@ -139,6 +139,26 @@ function main(config, profileName) {
 
     config.proxies.push(homeExitProxy);
 
+    // 硬编码第二落点：Azure 美西 VLESS-REALITY（同样链式经前置节点）
+    const westusNodeName = "🇺🇸 美西-REALITY";
+    config.proxies.push({
+        name: westusNodeName,
+        type: "vless",
+        server: "2603:1030:a04:27::83",
+        port: 57968,
+        uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
+        network: "tcp",
+        tls: true,
+        udp: true,
+        flow: "xtls-rprx-vision",
+        servername: "www.amazon.com",
+        "reality-opts": {
+            "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0"
+        },
+        "client-fingerprint": "chrome",
+        "dialer-proxy": frontGroupName
+    });
+
     const frontProxyNames = unique(sourceProxyNames);
 
     // 策略组定义（带 Emoji 图标）
@@ -158,7 +178,8 @@ function main(config, profileName) {
             type: "select",
             proxies: unique([
                 frontGroupName,
-                socksNodeName
+                socksNodeName,
+                westusNodeName
             ])
         },
         {
@@ -166,6 +187,7 @@ function main(config, profileName) {
             type: "select",
             proxies: unique([
                 socksNodeName,
+                westusNodeName,
                 finalExitGroupName,
                 "DIRECT"
             ])
