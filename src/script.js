@@ -432,6 +432,8 @@ function main(config, profileName) {
         `RULE-SET,${telegramDomainSet},${finalExitGroupName}`,
         `RULE-SET,telegramcidr,${finalExitGroupName},no-resolve`,
 
+        // Kraken 应用放行（其遥测域名会被 reject 规则集误杀）
+        "PROCESS-NAME,com.kraken.pay.app,🤖 AI服务-链式",
         "RULE-SET,reject,REJECT",
         "RULE-SET,private,DIRECT",
         "RULE-SET,lancidr,DIRECT",
