@@ -161,11 +161,11 @@ function main(config, profileName) {
             ...realityClientBase,
             name: japanRealityName,
             server: "2603:1040:401::206",
-            port: 31025,
-            uuid: "bfbe82b6-055a-4bfc-877d-5a402fc2a65f",
+            port: 22175,
+            uuid: "2c135989-458d-4eee-ae7e-b5cd4a0e63ea",
             servername: "www.apple.com",
             "reality-opts": {
-                "public-key": "UsO1gtWCVDuY05LFkTrlpqdaXpHnzacCfhPKGHQ13zA"
+                "public-key": "8JH1c75ikJWfvXisGEj1ZRuz27gbgxW-AitOpg9qNAQ"
             }
         },
         {
