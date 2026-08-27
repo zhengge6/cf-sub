@@ -5,7 +5,7 @@ function main(config, profileName) {
     const finalExitGroupName = "🌍 全局出口";
     const aiGroupName = "🤖 AI服务-链式";
     const mailGroupName = "✉️ 邮件服务";
-    const homeExitName = "🏠 家宽出口";
+    const homeExitName = "🇯🇵 日本出口";
 
     const processNames = [
         "tor",
@@ -64,7 +64,7 @@ function main(config, profileName) {
 
     config.proxies.forEach((proxy, index) => {
         if (!proxy || !proxy.name) return;
-        if (proxy.name === homeExitName || proxy.name.includes("家宽出口")) return;
+        if (proxy.name === homeExitName || proxy.name.includes("家宽出口") || proxy.name.includes("日本出口")) return;
 
         const baseName = formatNodeName(proxy.name) || `节点 ${index + 1}`;
         const duplicateIndex = (usedSourceNames.get(baseName) || 0) + 1;
