@@ -13,6 +13,67 @@ export default {
 
     const url = new URL(request.url);
 
+    // 调试端点：仅含两台自建 REALITY 节点的最小 Clash 配置。
+    // 节点参数必须与 src/script.js 中 realityClientBase/两个节点保持同步。
+    if (url.pathname === '/sub' && url.searchParams.get('only') === 'reality') {
+      const yaml = `# CF-Sub REALITY isolation test profile
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: true
+unified-delay: true
+tcp-concurrent: true
+global-client-fingerprint: chrome
+proxies:
+  - name: 🇯🇵 日本-REALITY
+    type: vless
+    server: 2603:1040:401::206
+    port: 31025
+    uuid: bfbe82b6-055a-4bfc-877d-5a402fc2a65f
+    network: tcp
+    tls: true
+    udp: true
+    ip-version: ipv6
+    flow: xtls-rprx-vision
+    servername: www.shopify.com
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: UsO1gtWCVDuY05LFkTrlpqdaXpHnzacCfhPKGHQ13zA
+  - name: 🇺🇸 美西-REALITY
+    type: vless
+    server: 2603:1030:a04:27::83
+    port: 57968
+    uuid: 115dd6c9-dba6-4c3e-9e43-89acfea74610
+    network: tcp
+    tls: true
+    udp: true
+    ip-version: ipv6
+    flow: xtls-rprx-vision
+    servername: www.shopify.com
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
+proxy-groups:
+  - name: 🧪 REALITY测试
+    type: select
+    proxies:
+      - 🇯🇵 日本-REALITY
+      - 🇺🇸 美西-REALITY
+rules:
+  - MATCH,🧪 REALITY测试
+`;
+      return new Response(yaml, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/yaml; charset=utf-8',
+          'Cache-Control': 'no-store',
+          'Access-Control-Allow-Origin': '*',
+          'profile-update-interval': '1',
+        },
+      });
+    }
+
     // /sub 路由双层缓存：
     //   主键（去掉 refresh/nocache/cb 的规范化 URL）max-age 1h
     //   副本键（追加 _bk=1）max-age 7d，用于上游机场失败时兜底回吐最后成功版本
