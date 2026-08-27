@@ -110,7 +110,7 @@ proxies:
     udp: true
     ip-version: ipv6
     flow: xtls-rprx-vision
-    servername: www.shopify.com
+    servername: www.apple.com
     client-fingerprint: chrome
     reality-opts:
       public-key: UsO1gtWCVDuY05LFkTrlpqdaXpHnzacCfhPKGHQ13zA
@@ -124,7 +124,7 @@ proxies:
     udp: true
     ip-version: ipv6
     flow: xtls-rprx-vision
-    servername: www.shopify.com
+    servername: www.apple.com
     client-fingerprint: chrome
     reality-opts:
       public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
