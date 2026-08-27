@@ -139,27 +139,64 @@ function main(config, profileName) {
 
     config.proxies.push(homeExitProxy);
 
-    // 硬编码第二落点：Azure 美西 VLESS-REALITY（同样链式经前置节点）
+    // ===== 自建 REALITY 直连节点（作为普通节点加入前置组，不带 dialer-proxy） =====
+    const japanRealityName = "🇯🇵 日本-REALITY";
     const westusNodeName = "🇺🇸 美西-REALITY";
-    config.proxies.push({
-        name: westusNodeName,
+
+    const realityClientBase = {
         type: "vless",
-        server: "2603:1030:a04:27::83",
-        port: 57968,
-        uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
         network: "tcp",
         tls: true,
         udp: true,
         flow: "xtls-rprx-vision",
-        servername: "www.amazon.com",
-        "reality-opts": {
-            "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0"
+        "client-fingerprint": "chrome"
+    };
+
+    // 参数来源：各机 `sing-box url` 输出（2026-08-27 核对）
+    config.proxies.push(
+        {
+            ...realityClientBase,
+            name: japanRealityName,
+            server: "2603:1040:401::206",
+            port: 31025,
+            uuid: "bfbe82b6-055a-4bfc-877d-5a402fc2a65f",
+            servername: "www.paypal.com",
+            "reality-opts": {
+                "public-key": "UsO1gtWCVDuY05LFkTrlpqdaXpHnzacCfhPKGHQ13zA"
+            }
         },
-        "client-fingerprint": "chrome",
+        {
+            ...realityClientBase,
+            name: westusNodeName,
+            server: "2603:1030:a04:27::83",
+            port: 57968,
+            uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
+            servername: "www.amazon.com",
+            "reality-opts": {
+                "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0"
+            }
+        }
+    );
+
+    // 第二落点：美西 socks5（与家宽出口同构，链式经前置节点）
+    const westusExitName = "🇺🇸 美西出口";
+    config.proxies.push({
+        name: westusExitName,
+        type: "socks5",
+        server: "2603:1030:a04:27::83",
+        port: 41025,
+        username: socksUsername,
+        password: socksPassword,
+        udp: true,
         "dialer-proxy": frontGroupName
     });
 
-    const frontProxyNames = unique(sourceProxyNames);
+    // 前置池 = 机场全部节点 + 两台自建 REALITY 直连
+    const frontProxyNames = unique([
+        ...sourceProxyNames,
+        japanRealityName,
+        westusNodeName
+    ]);
 
     // 策略组定义（带 Emoji 图标）
     config["proxy-groups"] = [
@@ -179,7 +216,7 @@ function main(config, profileName) {
             proxies: unique([
                 frontGroupName,
                 socksNodeName,
-                westusNodeName
+                westusExitName
             ])
         },
         {
@@ -187,7 +224,7 @@ function main(config, profileName) {
             type: "select",
             proxies: unique([
                 socksNodeName,
-                westusNodeName,
+                westusExitName,
                 finalExitGroupName,
                 "DIRECT"
             ])
