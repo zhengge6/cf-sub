@@ -38,6 +38,36 @@ interface KVNamespaceLike {
 // REALITY 测试订阅拉取统计（Cache API 计数器）
 const STAT_KEY = 'https://cf-sub-internal.invalid/__realtrystats';
 
+// 两台机每5分钟推送的真实流量累计（iptables 按端口计量）
+const USAGE_KEY = 'https://cf-sub-internal.invalid/__realusage';
+const PUSH_TOKEN = '8bb8c37257c099260c294e526e022f5b';
+const TOTAL_QUOTA = 1099511627776; // 用量条参照值 1TB
+
+interface MachineUsage {
+  i: number;
+  o: number;
+  t: string;
+}
+
+interface UsageState {
+  jp?: MachineUsage;
+  us?: MachineUsage;
+}
+
+async function readUsage(cache: KVNamespaceLike): Promise<UsageState> {
+  const cached = await cache.match(new Request(USAGE_KEY));
+  if (!cached) return {};
+  try {
+    return await cached.json();
+  } catch {
+    return {};
+  }
+}
+
+function gb(bytes: number): string {
+  return (bytes / 1073741824).toFixed(2);
+}
+
 interface RealityStats {
   total: number;
   days: Record<string, number>;
@@ -421,7 +451,14 @@ rules:
       const started = Date.now();
       const statsCache = caches.default as unknown as KVNamespaceLike;
       const st = await readStats(statsCache);
+      const usage = await readUsage(statsCache);
       ctx.waitUntil(bumpStats(ctx));
+      // 真实流量用量：download=入站(客户端请求+回传内容) upload=出站
+      const jpU = usage.jp || { i: 0, o: 0, t: '' };
+      const usU = usage.us || { i: 0, o: 0, t: '' };
+      const downB = (jpU.i || 0) + (usU.i || 0);
+      const upB = (jpU.o || 0) + (usU.o || 0);
+      const userinfo = `upload=${upB}; download=${downB}; total=${TOTAL_QUOTA}; expire=4102444800`;
       ctx.waitUntil(
         appendLog(ctx, { status: 200, durMs: Date.now() - started, cache: 'direct', path: '/sub?only=reality' })
       );
@@ -435,6 +472,7 @@ rules:
           'profile-title': 'base64:' + utf8b64('🧪 REALITY 测试订阅'),
           'Content-Disposition': 'attachment; filename="reality-test.yaml"',
           'X-Reality-Fetches': String(st.total + 1),
+          'subscription-userinfo': userinfo,
         },
       });
     }
@@ -444,14 +482,49 @@ rules:
       const cache = caches.default as unknown as KVNamespaceLike;
       const s = await readStats(cache);
       const d = statDay();
+      const u = await readUsage(cache);
+      const jp = u.jp || { i: 0, o: 0, t: '-' };
+      const us = u.us || { i: 0, o: 0, t: '-' };
       const body =
         `REALITY 订阅拉取统计\n` +
         `总次数: ${s.total}\n` +
         `今日(${d}): ${s.days[d] || 0}\n` +
-        `最近一次: ${s.last || '-'}\n`;
+        `最近一次拉取: ${s.last || '-'}\n` +
+        `\nREALITY 端口流量计量\n` +
+        `日本(31025): ↓${gb(jp.i)}GB ↑${gb(jp.o)}GB  更新:${jp.t}\n` +
+        `美西(57968): ↓${gb(us.i)}GB ↑${gb(us.o)}GB  更新:${us.t}\n`;
       return new Response(body, {
         status: 200,
         headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      });
+    }
+
+    // 两台机流量推送入口：/stats/ingest?machine=jp|us&in=&out=&key=
+    if (url.pathname === '/stats/ingest') {
+      if (url.searchParams.get('key') !== PUSH_TOKEN) {
+        return new Response(JSON.stringify({ success: false, message: 'forbidden' }), { status: 403 });
+      }
+      const machine = url.searchParams.get('machine') === 'us' ? 'us' : 'jp';
+      const inB = Number(url.searchParams.get('in') || 0);
+      const outB = Number(url.searchParams.get('out') || 0);
+      // 单次增量保护：机器端推的是累计绝对值，异常大的跳变直接拒绝
+      const cache = caches.default as unknown as KVNamespaceLike;
+      const prev = await readUsage(cache);
+      const before = prev[machine] || { i: 0, o: 0 };
+      if (inB - before.i > 549755813888 || outB - before.o > 549755813888) {
+        return new Response(JSON.stringify({ success: false, message: 'delta too large' }), { status: 400 });
+      }
+      const next: UsageState = { ...prev };
+      next[machine] = { i: Math.max(inB, before.i), o: Math.max(outB, before.o), t: new Date().toISOString() };
+      ctx.waitUntil(
+        cache.put(
+          new Request(USAGE_KEY),
+          new Response(JSON.stringify(next), { headers: { 'Cache-Control': 'public, max-age=31536000' } })
+        )
+      );
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json; charset=utf-8' },
       });
     }
 
