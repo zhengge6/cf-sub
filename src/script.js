@@ -163,7 +163,7 @@ function main(config, profileName) {
             server: "2603:1040:401::206",
             port: 31025,
             uuid: "bfbe82b6-055a-4bfc-877d-5a402fc2a65f",
-            servername: "www.paypal.com",
+            servername: "www.shopify.com",
             "reality-opts": {
                 "public-key": "UsO1gtWCVDuY05LFkTrlpqdaXpHnzacCfhPKGHQ13zA"
             }
@@ -174,7 +174,7 @@ function main(config, profileName) {
             server: "2603:1030:a04:27::83",
             port: 57968,
             uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
-            servername: "www.amazon.com",
+            servername: "www.shopify.com",
             "reality-opts": {
                 "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0"
             }
