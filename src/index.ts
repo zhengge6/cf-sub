@@ -207,6 +207,22 @@ proxies:
     client-fingerprint: chrome
     reality-opts:
       public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
+  - name: 🇯🇵 日本-HY2
+    type: hysteria2
+    server: 2603:1040:401::206
+    port: 443
+    password: e384403d6e38658f32eb627f
+    udp: true
+    ip-version: ipv6
+    skip-cert-verify: true
+  - name: 🇺🇸 美西-HY2
+    type: hysteria2
+    server: 2603:1030:a04:27::83
+    port: 36712
+    password: a723d54c10a36c24d5e4b042
+    udp: true
+    ip-version: ipv6
+    skip-cert-verify: true
 proxy-groups:
   - name: 🌍 全局出口
     type: select
