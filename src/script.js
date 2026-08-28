@@ -181,6 +181,35 @@ function main(config, profileName) {
         }
     );
 
+    // ===== 自建 HY2 直连节点（UDP 443/36712，晚高峰加速备线，同样进前置组） =====
+    const japanHy2Name = "🇯🇵 日本-HY2";
+    const westusHy2Name = "🇺🇸 美西-HY2";
+
+    const hy2ClientBase = {
+        type: "hysteria2",
+        udp: true,
+        "ip-version": "ipv6",
+        "skip-cert-verify": true
+    };
+
+    // 参数来源：各机 /etc/sing-box/conf/Hysteria2-*.json（2026-08-28）
+    config.proxies.push(
+        {
+            ...hy2ClientBase,
+            name: japanHy2Name,
+            server: "2603:1040:401::206",
+            port: 443,
+            password: "e384403d6e38658f32eb627f"
+        },
+        {
+            ...hy2ClientBase,
+            name: westusHy2Name,
+            server: "2603:1030:a04:27::83",
+            port: 36712,
+            password: "a723d54c10a36c24d5e4b042"
+        }
+    );
+
     // 第二落点：美西 socks5（与家宽出口同构，链式经前置节点）
     const westusExitName = "🇺🇸 美西出口";
     config.proxies.push({
@@ -194,11 +223,13 @@ function main(config, profileName) {
         "dialer-proxy": frontGroupName
     });
 
-    // 前置池 = 机场全部节点 + 两台自建 REALITY 直连
+    // 前置池 = 机场全部节点 + 两台自建 REALITY 直连 + 两台 HY2 直连
     const frontProxyNames = unique([
         ...sourceProxyNames,
         japanRealityName,
-        westusNodeName
+        westusNodeName,
+        japanHy2Name,
+        westusHy2Name
     ]);
 
     // 前置分层：优先 IEPL/IPLC/专线标记节点（名称匹配）
