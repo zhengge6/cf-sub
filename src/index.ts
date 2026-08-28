@@ -169,7 +169,7 @@ export default {
     // 调试端点：仅含两台自建 REALITY 节点的最小 Clash 配置。
     // 节点参数必须与 src/script.js 中 realityClientBase/两个节点保持同步。
     if (url.pathname === '/sub' && url.searchParams.get('only') === 'reality') {
-      const yaml = `# CF-Sub REALITY isolation test profile (meta-rules-dat routing)
+      const yaml = `# CF-Sub REALITY isolation test profile v2 (meta-rules-dat routing)
 mixed-port: 7890
 allow-lan: false
 mode: rule
