@@ -152,10 +152,12 @@ function main(config, profileName) {
         udp: true,
         "ip-version": "ipv6",
         flow: "xtls-rprx-vision",
+        encryption: "none",
+        "packet-encoding": "xudp",
         "client-fingerprint": "chrome"
     };
 
-    // 参数来源：各机 `sing-box url` 输出（2026-08-27 核对）
+    // 参数来源：各机 sing-box conf（日本 2026-09-02 az run-command 核对）
     config.proxies.push(
         {
             ...realityClientBase,
@@ -165,7 +167,8 @@ function main(config, profileName) {
             uuid: "2c135989-458d-4eee-ae7e-b5cd4a0e63ea",
             servername: "www.apple.com",
             "reality-opts": {
-                "public-key": "8JH1c75ikJWfvXisGEj1ZRuz27gbgxW-AitOpg9qNAQ"
+                "public-key": "8JH1c75ikJWfvXisGEj1ZRuz27gbgxW-AitOpg9qNAQ",
+                "short-id": ""
             }
         },
         {
@@ -176,7 +179,8 @@ function main(config, profileName) {
             uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
             servername: "www.apple.com",
             "reality-opts": {
-                "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0"
+                "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0",
+                "short-id": ""
             }
         }
     );
@@ -189,10 +193,13 @@ function main(config, profileName) {
         type: "hysteria2",
         udp: true,
         "ip-version": "ipv6",
-        "skip-cert-verify": true
+        sni: "tls",
+        alpn: ["h3"],
+        "skip-cert-verify": true,
+        "handshake-timeout": 30
     };
 
-    // 参数来源：各机 /etc/sing-box/conf/Hysteria2-*.json（2026-08-28）
+    // 参数来源：各机 /etc/sing-box/conf/Hysteria2-*.json；证书 CN/SAN=tls，ALPN=h3
     config.proxies.push(
         {
             ...hy2ClientBase,
@@ -307,6 +314,9 @@ function main(config, profileName) {
     // 客户端体验参数：上游机场 yaml 普遍缺失，缺省时补齐（对齐成熟模板）
     config["unified-delay"] = true;
     config["tcp-concurrent"] = true;
+    config.ipv6 = true;
+    if (!config.dns || typeof config.dns !== "object") config.dns = { enable: true };
+    config.dns.ipv6 = true;
     if (!config["global-client-fingerprint"]) {
         config["global-client-fingerprint"] = "chrome";
     }
