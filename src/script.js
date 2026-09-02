@@ -2,6 +2,7 @@ function main(config, profileName) {
     if (!Array.isArray(config.proxies)) config.proxies = [];
 
     const frontGroupName = "🚀 前置节点";
+    const chainFrontGroupName = "🔗 链式前置";
     const finalExitGroupName = "🌍 全局出口";
     const aiGroupName = "🤖 AI服务-链式";
     const mailGroupName = "✉️ 邮件服务";
@@ -109,7 +110,8 @@ function main(config, profileName) {
         type: clashProxyType,
         server: socksServer,
         port: socksPort,
-        "dialer-proxy": frontGroupName
+        "ip-version": "ipv6",
+        "dialer-proxy": chainFrontGroupName
     };
 
     if (socksType === 'socks5') {
@@ -227,7 +229,8 @@ function main(config, profileName) {
         username: socksUsername,
         password: socksPassword,
         udp: true,
-        "dialer-proxy": frontGroupName
+        "ip-version": "ipv6",
+        "dialer-proxy": chainFrontGroupName
     });
 
     // 前置池 = 机场全部节点 + 两台自建 REALITY 直连 + 两台 HY2 直连
@@ -282,6 +285,19 @@ function main(config, profileName) {
                     proxies: frontProxyNames.length ? frontProxyNames : ["DIRECT"]
                 }
               ]),
+        {
+            name: chainFrontGroupName,
+            type: "select",
+            proxies: unique([
+                japanRealityName,
+                westusNodeName,
+                japanHy2Name,
+                westusHy2Name,
+                ...(ieplFrontNames.length ? ["⚡ IEPL线路"] : []),
+                ...(ieplFrontNames.length && normalFrontNames.length ? ["🌐 普通线路"] : []),
+                ...(!ieplFrontNames.length ? frontProxyNames : [])
+            ])
+        },
         {
             name: finalExitGroupName,
             type: "select",
