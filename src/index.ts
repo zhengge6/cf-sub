@@ -179,6 +179,35 @@ unified-delay: true
 tcp-concurrent: true
 global-client-fingerprint: chrome
 proxies:
+  - name: 🇺🇸 美西-REALITY
+    type: vless
+    server: 20.228.81.252
+    port: 57968
+    uuid: 115dd6c9-dba6-4c3e-9e43-89acfea74610
+    network: tcp
+    tls: true
+    udp: true
+    ip-version: ipv4
+    flow: xtls-rprx-vision
+    encryption: none
+    packet-encoding: xudp
+    servername: www.apple.com
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
+      short-id: ""
+  - name: 🇺🇸 美西-HY2
+    type: hysteria2
+    server: 20.228.81.252
+    port: 36712
+    password: a723d54c10a36c24d5e4b042
+    udp: true
+    ip-version: ipv4
+    sni: tls
+    alpn:
+      - h3
+    skip-cert-verify: true
+    handshake-timeout: 30
   - name: 🇯🇵 日本-REALITY
     type: vless
     server: 2603:1040:401::206
@@ -189,24 +218,13 @@ proxies:
     udp: true
     ip-version: ipv6
     flow: xtls-rprx-vision
+    encryption: none
+    packet-encoding: xudp
     servername: www.apple.com
     client-fingerprint: chrome
     reality-opts:
       public-key: 8JH1c75ikJWfvXisGEj1ZRuz27gbgxW-AitOpg9qNAQ
-  - name: 🇺🇸 美西-REALITY
-    type: vless
-    server: 2603:1030:a04:27::83
-    port: 57968
-    uuid: 115dd6c9-dba6-4c3e-9e43-89acfea74610
-    network: tcp
-    tls: true
-    udp: true
-    ip-version: ipv6
-    flow: xtls-rprx-vision
-    servername: www.apple.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
+      short-id: ""
   - name: 🇯🇵 日本-HY2
     type: hysteria2
     server: 2603:1040:401::206
@@ -214,23 +232,19 @@ proxies:
     password: e384403d6e38658f32eb627f
     udp: true
     ip-version: ipv6
+    sni: tls
+    alpn:
+      - h3
     skip-cert-verify: true
-  - name: 🇺🇸 美西-HY2
-    type: hysteria2
-    server: 2603:1030:a04:27::83
-    port: 36712
-    password: a723d54c10a36c24d5e4b042
-    udp: true
-    ip-version: ipv6
-    skip-cert-verify: true
+    handshake-timeout: 30
 proxy-groups:
   - name: 🌍 全局出口
     type: select
     proxies:
-      - 🇯🇵 日本-REALITY
       - 🇺🇸 美西-REALITY
-      - 🇯🇵 日本-HY2
       - 🇺🇸 美西-HY2
+      - 🇯🇵 日本-REALITY
+      - 🇯🇵 日本-HY2
 rule-providers:
   reject:
     type: http
