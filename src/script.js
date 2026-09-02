@@ -176,10 +176,11 @@ function main(config, profileName) {
         {
             ...realityClientBase,
             name: westusNodeName,
-            server: "2603:1030:a04:27::83",
+            server: "20.228.81.252",
             port: 57968,
             uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
             servername: "www.apple.com",
+            "ip-version": "ipv4",
             "reality-opts": {
                 "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0",
                 "short-id": ""
@@ -213,9 +214,10 @@ function main(config, profileName) {
         {
             ...hy2ClientBase,
             name: westusHy2Name,
-            server: "2603:1030:a04:27::83",
+            server: "20.228.81.252",
             port: 36712,
-            password: "a723d54c10a36c24d5e4b042"
+            password: "a723d54c10a36c24d5e4b042",
+            "ip-version": "ipv4"
         }
     );
 
@@ -224,13 +226,12 @@ function main(config, profileName) {
     config.proxies.push({
         name: westusExitName,
         type: "socks5",
-        server: "2603:1030:a04:27::83",
+        server: "20.228.81.252",
         port: 41025,
         username: socksUsername,
         password: socksPassword,
         udp: true,
-        "ip-version": "ipv6",
-        "dialer-proxy": chainFrontGroupName
+        "ip-version": "ipv4"
     });
 
     // 前置池 = 机场全部节点 + 两台自建 REALITY 直连 + 两台 HY2 直连
@@ -289,10 +290,10 @@ function main(config, profileName) {
             name: chainFrontGroupName,
             type: "select",
             proxies: unique([
-                japanRealityName,
                 westusNodeName,
-                japanHy2Name,
                 westusHy2Name,
+                japanRealityName,
+                japanHy2Name,
                 ...(ieplFrontNames.length ? ["⚡ IEPL线路"] : []),
                 ...(ieplFrontNames.length && normalFrontNames.length ? ["🌐 普通线路"] : []),
                 ...(!ieplFrontNames.length ? frontProxyNames : [])
@@ -311,8 +312,8 @@ function main(config, profileName) {
             name: aiGroupName,
             type: "select",
             proxies: unique([
-                socksNodeName,
                 westusExitName,
+                socksNodeName,
                 finalExitGroupName,
                 "DIRECT"
             ])
