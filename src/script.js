@@ -145,6 +145,8 @@ function main(config, profileName) {
     // ===== 自建 REALITY 直连节点（作为普通节点加入前置组，不带 dialer-proxy） =====
     const japanRealityName = "🇯🇵 日本-REALITY";
     const westusNodeName = "🇺🇸 美西-REALITY";
+    const centralusNodeName = "🇺🇸 中部-REALITY";
+    const centralusNodeNameV6 = "🇺🇸 中部-REALITY-v6";
 
     const realityClientBase = {
         type: "vless",
@@ -184,6 +186,32 @@ function main(config, profileName) {
                 "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0",
                 "short-id": ""
             }
+        },
+        {
+            ...realityClientBase,
+            name: centralusNodeName,
+            server: "20.9.56.161",
+            port: 52839,
+            uuid: "afe80ef8-f8f5-456c-b8df-b4235e7c4b60",
+            servername: "www.ebay.com",
+            "ip-version": "ipv4",
+            "reality-opts": {
+                "public-key": "9tSQHVNii662_X_JojEIWkMsw1JPnDfKuRGDno7ZCyo",
+                "short-id": ""
+            }
+        },
+        {
+            ...realityClientBase,
+            name: centralusNodeNameV6,
+            server: "2603:1030:7:6::41",
+            port: 52839,
+            uuid: "afe80ef8-f8f5-456c-b8df-b4235e7c4b60",
+            servername: "www.ebay.com",
+            "ip-version": "ipv6",
+            "reality-opts": {
+                "public-key": "9tSQHVNii662_X_JojEIWkMsw1JPnDfKuRGDno7ZCyo",
+                "short-id": ""
+            }
         }
     );
 
@@ -220,22 +248,25 @@ function main(config, profileName) {
         }
     );
 
-    // 第二落点：美西 socks5（与家宽出口同构，链式经前置节点）
+    // 第二落点：美西 socks5 走 IPv6（圣何塞只保留 v6 + socks5 落地）
     const westusExitName = "🇺🇸 美西出口";
     config.proxies.push({
         name: westusExitName,
         type: "socks5",
-        server: "20.228.81.252",
+        server: "2603:1030:a04:27::83",
         port: 41025,
         username: socksUsername,
         password: socksPassword,
         udp: true,
-        "ip-version": "ipv4"
+        "ip-version": "ipv6",
+        "dialer-proxy": chainFrontGroupName
     });
 
-    // 前置池 = 机场全部节点 + 两台自建 REALITY 直连 + 两台 HY2 直连
+    // 前置池 = 机场全部节点 + 自建 REALITY/HY2 直连
     const frontProxyNames = unique([
         ...sourceProxyNames,
+        centralusNodeName,
+        centralusNodeNameV6,
         japanRealityName,
         westusNodeName,
         japanHy2Name,
@@ -289,6 +320,8 @@ function main(config, profileName) {
             name: chainFrontGroupName,
             type: "select",
             proxies: unique([
+                centralusNodeName,
+                centralusNodeNameV6,
                 westusNodeName,
                 westusHy2Name,
                 japanRealityName,
