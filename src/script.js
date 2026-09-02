@@ -92,7 +92,7 @@ function main(config, profileName) {
 
     const socksType = (customSocks.type || (typeof SOCKS_TYPE !== 'undefined' ? SOCKS_TYPE : "socks5")).toLowerCase();
     // 硬编码默认优先，query 参数可临时覆盖；忽略环境变量（避免占位符污染）
-    const socksServer = customSocks.server || "20.48.111.200";
+    const socksServer = customSocks.server || "2603:1040:401:15::ce";
     const socksPort = customSocks.port ? Number(customSocks.port) : 41025;
     const socksUsername = customSocks.username || "proxyuser";
     const socksPassword = customSocks.password || "3SuKneO3gKnSKKJCk78";
@@ -110,7 +110,8 @@ function main(config, profileName) {
         type: clashProxyType,
         server: socksServer,
         port: socksPort,
-        "ip-version": "ipv4"
+        "ip-version": "ipv6",
+        "dialer-proxy": chainFrontGroupName
     };
 
     if (socksType === 'socks5') {
