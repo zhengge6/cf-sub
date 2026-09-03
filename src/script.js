@@ -27,7 +27,9 @@ function main(config, profileName) {
 
     const directDomainSuffixes = [
         "example.com",
-        "rewards.bing.com"
+        "bing.com",
+        "bing.net",
+        "bingapis.com"
     ];
 
     // ===== 自定义域名拦截区 =====
@@ -101,50 +103,7 @@ function main(config, profileName) {
     const socksSni = customSocks.sni || ((typeof SOCKS_SNI !== 'undefined' && SOCKS_SNI) ? SOCKS_SNI : "");
     const socksNodeName = customSocks.name || homeExitName;
 
-    // 根据不同出口协议组装家宽代理节点
-    // Clash 中 http/https 出口均使用 type=http，https 通过 tls=true 区分
-    const clashProxyType = (socksType === 'https') ? 'http' : socksType;
-
-    let homeExitProxy = {
-        name: socksNodeName,
-        type: clashProxyType,
-        server: socksServer,
-        port: socksPort,
-        "ip-version": "ipv6",
-        "dialer-proxy": frontGroupName
-    };
-
-    if (socksType === 'socks5') {
-        if (socksUsername) homeExitProxy.username = socksUsername;
-        if (socksPassword) homeExitProxy.password = socksPassword;
-        homeExitProxy.udp = true;
-    } else if (socksType === 'http') {
-        if (socksUsername) homeExitProxy.username = socksUsername;
-        if (socksPassword) homeExitProxy.password = socksPassword;
-    } else if (socksType === 'https') {
-        if (socksUsername) homeExitProxy.username = socksUsername;
-        if (socksPassword) homeExitProxy.password = socksPassword;
-        homeExitProxy.tls = true;
-        if (socksSni) homeExitProxy.sni = socksSni;
-    } else if (socksType === 'ss') {
-        homeExitProxy.cipher = socksCipher;
-        homeExitProxy.password = socksPassword;
-        homeExitProxy.udp = true;
-    } else if (socksType === 'trojan') {
-        homeExitProxy.password = socksPassword;
-        homeExitProxy.tls = true;
-        if (socksSni) homeExitProxy.sni = socksSni;
-        homeExitProxy.udp = true;
-    } else if (socksType === 'vless') {
-        homeExitProxy.uuid = socksUuid;
-        homeExitProxy.cipher = 'auto';
-        homeExitProxy.udp = true;
-    }
-
-    config.proxies.push(homeExitProxy);
-
     // ===== 自建 REALITY 直连节点（作为普通节点加入前置组，不带 dialer-proxy） =====
-    const japanRealityName = "🇯🇵 日本-REALITY";
     const westusNodeName = "🇺🇸 美西-REALITY";
     const centralusNodeName = "🇺🇸 中部-REALITY";
 
@@ -162,18 +121,6 @@ function main(config, profileName) {
 
     // 参数来源：各机 sing-box conf（日本 2026-09-02 az run-command 核对）
     config.proxies.push(
-        {
-            ...realityClientBase,
-            name: japanRealityName,
-            server: "2603:1040:401::206",
-            port: 22175,
-            uuid: "2c135989-458d-4eee-ae7e-b5cd4a0e63ea",
-            servername: "www.apple.com",
-            "reality-opts": {
-                "public-key": "8JH1c75ikJWfvXisGEj1ZRuz27gbgxW-AitOpg9qNAQ",
-                "short-id": ""
-            }
-        },
         {
             ...realityClientBase,
             name: westusNodeName,
@@ -203,7 +150,6 @@ function main(config, profileName) {
     );
 
     // ===== 自建 HY2 直连节点（UDP 443/36712，晚高峰加速备线，同样进前置组） =====
-    const japanHy2Name = "🇯🇵 日本-HY2";
     const westusHy2Name = "🇺🇸 美西-HY2";
 
     const hy2ClientBase = {
@@ -218,13 +164,6 @@ function main(config, profileName) {
 
     // 参数来源：各机 /etc/sing-box/conf/Hysteria2-*.json；证书 CN/SAN=tls，ALPN=h3
     config.proxies.push(
-        {
-            ...hy2ClientBase,
-            name: japanHy2Name,
-            server: "2603:1040:401::206",
-            port: 443,
-            password: "e384403d6e38658f32eb627f"
-        },
         {
             ...hy2ClientBase,
             name: westusHy2Name,
@@ -266,9 +205,7 @@ function main(config, profileName) {
     const frontProxyNames = unique([
         ...sourceProxyNames,
         centralusNodeName,
-        japanRealityName,
         westusNodeName,
-        japanHy2Name,
         westusHy2Name
     ]);
 
