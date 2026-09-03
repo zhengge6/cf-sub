@@ -225,22 +225,6 @@ proxies:
     reality-opts:
       public-key: 9tSQHVNii662_X_JojEIWkMsw1JPnDfKuRGDno7ZCyo
       short-id: ""
-  - name: 🇺🇸 美西出口
-    type: socks5
-    server: 2603:1030:a04:27::83
-    port: 41025
-    username: proxyuser
-    password: 3SuKneO3gKnSKKJCk78
-    udp: true
-    ip-version: ipv6
-  - name: 🇺🇸 中部出口
-    type: socks5
-    server: 2603:1030:7:6::41
-    port: 41025
-    username: proxyuser
-    password: 3SuKneO3gKnSKKJCk78
-    udp: true
-    ip-version: ipv6
   - name: 🇯🇵 日本-REALITY
     type: vless
     server: 2603:1040:401::206
@@ -276,9 +260,7 @@ proxy-groups:
     proxies:
       - 🇺🇸 美西-REALITY
       - 🇺🇸 美西-HY2
-      - 🇺🇸 美西出口
       - 🇺🇸 中部-REALITY
-      - 🇺🇸 中部出口
 rule-providers:
   reject:
     type: http
