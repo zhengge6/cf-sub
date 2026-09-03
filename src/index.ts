@@ -417,6 +417,7 @@ rules:
   - DST-PORT,587,🌍 全局出口
   - DST-PORT,143,🌍 全局出口
   - DOMAIN-SUFFIX,example.com,DIRECT
+  - DOMAIN-SUFFIX,rewards.bing.com,DIRECT
   - DOMAIN-KEYWORD,ipinfo,🌍 全局出口
   - RULE-SET,category-ai-chat-!cn,🌍 全局出口
   - DOMAIN-SUFFIX,openai.com,🌍 全局出口
