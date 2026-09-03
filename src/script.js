@@ -345,7 +345,6 @@ function main(config, profileName) {
             proxies: unique([
                 westusExitName,
                 centralusExitName,
-                socksNodeName,
                 finalExitGroupName,
                 "DIRECT"
             ])
