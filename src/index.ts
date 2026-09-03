@@ -166,8 +166,8 @@ export default {
       });
     }
 
-    // 调试端点：仅含两台自建 REALITY 节点的最小 Clash 配置。
-    // 节点参数必须与 src/script.js 中 realityClientBase/两个节点保持同步。
+    // 调试端点：自建节点最小 Clash 配置。
+    // 节点参数必须与 src/script.js 保持同步。
     if (url.pathname === '/sub' && url.searchParams.get('only') === 'reality') {
       const yaml = `# CF-Sub REALITY isolation test profile v2 (meta-rules-dat routing)
 mixed-port: 7890
@@ -208,6 +208,39 @@ proxies:
       - h3
     skip-cert-verify: true
     handshake-timeout: 30
+  - name: 🇺🇸 中部-REALITY
+    type: vless
+    server: 2603:1030:7:6::41
+    port: 52839
+    uuid: afe80ef8-f8f5-456c-b8df-b4235e7c4b60
+    network: tcp
+    tls: true
+    udp: true
+    ip-version: ipv6
+    flow: xtls-rprx-vision
+    encryption: none
+    packet-encoding: xudp
+    servername: www.ebay.com
+    client-fingerprint: chrome
+    reality-opts:
+      public-key: 9tSQHVNii662_X_JojEIWkMsw1JPnDfKuRGDno7ZCyo
+      short-id: ""
+  - name: 🇺🇸 美西出口
+    type: socks5
+    server: 2603:1030:a04:27::83
+    port: 41025
+    username: proxyuser
+    password: 3SuKneO3gKnSKKJCk78
+    udp: true
+    ip-version: ipv6
+  - name: 🇺🇸 中部出口
+    type: socks5
+    server: 2603:1030:7:6::41
+    port: 41025
+    username: proxyuser
+    password: 3SuKneO3gKnSKKJCk78
+    udp: true
+    ip-version: ipv6
   - name: 🇯🇵 日本-REALITY
     type: vless
     server: 2603:1040:401::206
@@ -243,8 +276,9 @@ proxy-groups:
     proxies:
       - 🇺🇸 美西-REALITY
       - 🇺🇸 美西-HY2
-      - 🇯🇵 日本-REALITY
-      - 🇯🇵 日本-HY2
+      - 🇺🇸 美西出口
+      - 🇺🇸 中部-REALITY
+      - 🇺🇸 中部出口
 rule-providers:
   reject:
     type: http
