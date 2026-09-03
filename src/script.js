@@ -27,7 +27,8 @@ function main(config, profileName) {
     ];
 
     const directDomainSuffixes = [
-        "example.com"
+        "example.com",
+        "rewards.bing.com"
     ];
 
     // ===== 自定义域名拦截区 =====
