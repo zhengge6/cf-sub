@@ -225,35 +225,6 @@ proxies:
     reality-opts:
       public-key: 9tSQHVNii662_X_JojEIWkMsw1JPnDfKuRGDno7ZCyo
       short-id: ""
-  - name: 🇯🇵 日本-REALITY
-    type: vless
-    server: 2603:1040:401::206
-    port: 22175
-    uuid: 2c135989-458d-4eee-ae7e-b5cd4a0e63ea
-    network: tcp
-    tls: true
-    udp: true
-    ip-version: ipv6
-    flow: xtls-rprx-vision
-    encryption: none
-    packet-encoding: xudp
-    servername: www.apple.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 8JH1c75ikJWfvXisGEj1ZRuz27gbgxW-AitOpg9qNAQ
-      short-id: ""
-  - name: 🇯🇵 日本-HY2
-    type: hysteria2
-    server: 2603:1040:401::206
-    port: 443
-    password: e384403d6e38658f32eb627f
-    udp: true
-    ip-version: ipv6
-    sni: tls
-    alpn:
-      - h3
-    skip-cert-verify: true
-    handshake-timeout: 30
 proxy-groups:
   - name: 🌍 全局出口
     type: select
@@ -417,7 +388,9 @@ rules:
   - DST-PORT,587,🌍 全局出口
   - DST-PORT,143,🌍 全局出口
   - DOMAIN-SUFFIX,example.com,DIRECT
-  - DOMAIN-SUFFIX,rewards.bing.com,DIRECT
+  - DOMAIN-SUFFIX,bing.com,DIRECT
+  - DOMAIN-SUFFIX,bing.net,DIRECT
+  - DOMAIN-SUFFIX,bingapis.com,DIRECT
   - DOMAIN-KEYWORD,ipinfo,🌍 全局出口
   - RULE-SET,category-ai-chat-!cn,🌍 全局出口
   - DOMAIN-SUFFIX,openai.com,🌍 全局出口
