@@ -334,7 +334,6 @@ function main(config, profileName) {
             type: "select",
             proxies: unique([
                 frontGroupName,
-                socksNodeName,
                 westusExitName,
                 centralusExitName
             ])
