@@ -147,7 +147,6 @@ function main(config, profileName) {
     const japanRealityName = "🇯🇵 日本-REALITY";
     const westusNodeName = "🇺🇸 美西-REALITY";
     const centralusNodeName = "🇺🇸 中部-REALITY";
-    const centralusNodeNameV6 = "🇺🇸 中部-REALITY-v6";
 
     const realityClientBase = {
         type: "vless",
@@ -191,19 +190,6 @@ function main(config, profileName) {
         {
             ...realityClientBase,
             name: centralusNodeName,
-            server: "20.9.56.161",
-            port: 52839,
-            uuid: "afe80ef8-f8f5-456c-b8df-b4235e7c4b60",
-            servername: "www.ebay.com",
-            "ip-version": "ipv4",
-            "reality-opts": {
-                "public-key": "9tSQHVNii662_X_JojEIWkMsw1JPnDfKuRGDno7ZCyo",
-                "short-id": ""
-            }
-        },
-        {
-            ...realityClientBase,
-            name: centralusNodeNameV6,
             server: "2603:1030:7:6::41",
             port: 52839,
             uuid: "afe80ef8-f8f5-456c-b8df-b4235e7c4b60",
@@ -263,11 +249,23 @@ function main(config, profileName) {
         "dialer-proxy": chainFrontGroupName
     });
 
+    const centralusExitName = "🇺🇸 中部出口";
+    config.proxies.push({
+        name: centralusExitName,
+        type: "socks5",
+        server: "2603:1030:7:6::41",
+        port: 41025,
+        username: socksUsername,
+        password: socksPassword,
+        udp: true,
+        "ip-version": "ipv6",
+        "dialer-proxy": chainFrontGroupName
+    });
+
     // 前置池 = 机场全部节点 + 自建 REALITY/HY2 直连
     const frontProxyNames = unique([
         ...sourceProxyNames,
         centralusNodeName,
-        centralusNodeNameV6,
         japanRealityName,
         westusNodeName,
         japanHy2Name,
@@ -322,7 +320,6 @@ function main(config, profileName) {
             type: "select",
             proxies: unique([
                 centralusNodeName,
-                centralusNodeNameV6,
                 westusNodeName,
                 westusHy2Name,
                 japanRealityName,
@@ -338,7 +335,8 @@ function main(config, profileName) {
             proxies: unique([
                 frontGroupName,
                 socksNodeName,
-                westusExitName
+                westusExitName,
+                centralusExitName
             ])
         },
         {
@@ -346,6 +344,7 @@ function main(config, profileName) {
             type: "select",
             proxies: unique([
                 westusExitName,
+                centralusExitName,
                 socksNodeName,
                 finalExitGroupName,
                 "DIRECT"
