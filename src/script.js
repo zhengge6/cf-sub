@@ -105,7 +105,6 @@ function main(config, profileName) {
 
     // ===== 自建 REALITY 直连节点（作为普通节点加入前置组，不带 dialer-proxy） =====
     const westusNodeName = "🇺🇸 美西-REALITY";
-    const centralusNodeName = "🇺🇸 中部-REALITY";
 
     const realityClientBase = {
         type: "vless",
@@ -131,19 +130,6 @@ function main(config, profileName) {
             "ip-version": "ipv4",
             "reality-opts": {
                 "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0",
-                "short-id": ""
-            }
-        },
-        {
-            ...realityClientBase,
-            name: centralusNodeName,
-            server: "2603:1030:7:6::41",
-            port: 52839,
-            uuid: "afe80ef8-f8f5-456c-b8df-b4235e7c4b60",
-            servername: "www.ebay.com",
-            "ip-version": "ipv6",
-            "reality-opts": {
-                "public-key": "9tSQHVNii662_X_JojEIWkMsw1JPnDfKuRGDno7ZCyo",
                 "short-id": ""
             }
         }
@@ -204,7 +190,6 @@ function main(config, profileName) {
     // 前置池 = 机场全部节点 + 自建 REALITY/HY2 直连
     const frontProxyNames = unique([
         ...sourceProxyNames,
-        centralusNodeName,
         westusNodeName,
         westusHy2Name
     ]);
