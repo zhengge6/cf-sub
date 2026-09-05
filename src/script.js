@@ -378,6 +378,9 @@ function main(config, profileName) {
             `DOMAIN-SUFFIX,${domain},DIRECT`
         ),
 
+        // linux.do 避开 Azure 出口（Cloudflare 对 Azure IP 易 429），走机场/前置
+        `DOMAIN-SUFFIX,linux.do,${frontGroupName}`,
+
         `DOMAIN-KEYWORD,ipinfo,${finalExitGroupName}`,
         // AI 类目统一走 AI 链式组（mrs 数据自动覆盖 claude/openai/gemini/poe/grok 等）
         `RULE-SET,${aiChatSetName},${aiGroupName}`,
