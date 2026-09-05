@@ -270,6 +270,7 @@ function main(config, profileName) {
     // 客户端体验参数：上游机场 yaml 普遍缺失，缺省时补齐（对齐成熟模板）
     config["unified-delay"] = true;
     config["tcp-concurrent"] = true;
+    config["find-process-mode"] = "always";
     config.ipv6 = true;
     if (!config.dns || typeof config.dns !== "object") config.dns = { enable: true };
     config.dns.ipv6 = true;
@@ -383,6 +384,19 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,linux.do,${frontGroupName}`,
 
         `DOMAIN-KEYWORD,ipinfo,${finalExitGroupName}`,
+        // Antigravity / Gemini → 必须走美西出口（进程名；配合下方域名规则）
+        `PROCESS-NAME,Antigravity.app,${westusExitName}`,
+        `PROCESS-NAME,Antigravity,${westusExitName}`,
+        `PROCESS-NAME,com.google.antigravity,${westusExitName}`,
+        `PROCESS-NAME,Gemini.app,${westusExitName}`,
+        `PROCESS-NAME,Gemini,${westusExitName}`,
+        `PROCESS-NAME,com.google.GeminiMacOS,${westusExitName}`,
+        `PROCESS-NAME,Antigravity IDE.app,${westusExitName}`,
+        `PROCESS-NAME,Antigravity IDE,${westusExitName}`,
+        `PROCESS-NAME,com.google.antigravity-ide,${westusExitName}`,
+        `PROCESS-NAME,language_server_macos_arm,${westusExitName}`,
+        `PROCESS-NAME,language_server_macos_x64,${westusExitName}`,
+        `PROCESS-NAME,language_server,${westusExitName}`,
         // AI 类目统一走 AI 链式组（mrs 数据自动覆盖 claude/openai/gemini/poe/grok 等）
         `RULE-SET,${aiChatSetName},${aiGroupName}`,
         `DOMAIN-SUFFIX,openai.com,${aiGroupName}`,
@@ -392,10 +406,10 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,anthropic.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,claude.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,claude.ai,${aiGroupName}`,
-        `DOMAIN,gemini.google.com,${aiGroupName}`,
-        `DOMAIN,aistudio.google.com,${aiGroupName}`,
-        `DOMAIN,makersuite.google.com,${aiGroupName}`,
-        `DOMAIN,generativelanguage.googleapis.com,${aiGroupName}`,
+        `DOMAIN,gemini.google.com,${westusExitName}`,
+        `DOMAIN,aistudio.google.com,${westusExitName}`,
+        `DOMAIN,makersuite.google.com,${westusExitName}`,
+        `DOMAIN,generativelanguage.googleapis.com,${westusExitName}`,
         `DOMAIN-SUFFIX,perplexity.ai,${aiGroupName}`,
         `DOMAIN-SUFFIX,poe.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,x.ai,${aiGroupName}`,
@@ -435,19 +449,6 @@ function main(config, profileName) {
         // Kraken 应用放行（其遥测域名会被 reject 规则集误杀）
         "PROCESS-NAME,com.kraken.pay.app,🤖 AI服务-链式",
 
-        // Antigravity / Gemini → 必须走美西出口
-        "PROCESS-NAME,Antigravity.app,🇺🇸 美西出口",
-        "PROCESS-NAME,Antigravity,🇺🇸 美西出口",
-        "PROCESS-NAME,com.google.antigravity,🇺🇸 美西出口",
-        "PROCESS-NAME,Gemini.app,🇺🇸 美西出口",
-        "PROCESS-NAME,Gemini,🇺🇸 美西出口",
-        "PROCESS-NAME,com.google.GeminiMacOS,🇺🇸 美西出口",
-        "PROCESS-NAME,Antigravity IDE.app,🇺🇸 美西出口",
-        "PROCESS-NAME,Antigravity IDE,🇺🇸 美西出口",
-        "PROCESS-NAME,com.google.antigravity-ide,🇺🇸 美西出口",
-        "PROCESS-NAME,language_server_macos_arm,🇺🇸 美西出口",
-        "PROCESS-NAME,language_server_macos_x64,🇺🇸 美西出口",
-        "PROCESS-NAME,language_server,🇺🇸 美西出口",
         "RULE-SET,reject,REJECT",
         "RULE-SET,private,DIRECT",
         "RULE-SET,lancidr,DIRECT",
