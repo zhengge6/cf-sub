@@ -29,7 +29,8 @@ function main(config, profileName) {
         "example.com",
         "bing.com",
         "bing.net",
-        "bingapis.com"
+        "bingapis.com",
+        "hybgzs.com"
     ];
 
     // ===== 自定义域名拦截区 =====
