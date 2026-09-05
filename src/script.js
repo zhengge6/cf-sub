@@ -434,6 +434,20 @@ function main(config, profileName) {
 
         // Kraken 应用放行（其遥测域名会被 reject 规则集误杀）
         "PROCESS-NAME,com.kraken.pay.app,🤖 AI服务-链式",
+
+        // Antigravity / Gemini → 必须走美西出口
+        "PROCESS-NAME,Antigravity.app,🇺🇸 美西出口",
+        "PROCESS-NAME,Antigravity,🇺🇸 美西出口",
+        "PROCESS-NAME,com.google.antigravity,🇺🇸 美西出口",
+        "PROCESS-NAME,Gemini.app,🇺🇸 美西出口",
+        "PROCESS-NAME,Gemini,🇺🇸 美西出口",
+        "PROCESS-NAME,com.google.GeminiMacOS,🇺🇸 美西出口",
+        "PROCESS-NAME,Antigravity IDE.app,🇺🇸 美西出口",
+        "PROCESS-NAME,Antigravity IDE,🇺🇸 美西出口",
+        "PROCESS-NAME,com.google.antigravity-ide,🇺🇸 美西出口",
+        "PROCESS-NAME,language_server_macos_arm,🇺🇸 美西出口",
+        "PROCESS-NAME,language_server_macos_x64,🇺🇸 美西出口",
+        "PROCESS-NAME,language_server,🇺🇸 美西出口",
         "RULE-SET,reject,REJECT",
         "RULE-SET,private,DIRECT",
         "RULE-SET,lancidr,DIRECT",
