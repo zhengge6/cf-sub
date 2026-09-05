@@ -123,7 +123,7 @@ function main(config, profileName) {
         {
             ...realityClientBase,
             name: westusNodeName,
-            server: "20.228.81.252",
+            server: "20.237.137.246",
             port: 57968,
             uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
             servername: "www.apple.com",
@@ -153,7 +153,7 @@ function main(config, profileName) {
         {
             ...hy2ClientBase,
             name: westusHy2Name,
-            server: "20.228.81.252",
+            server: "20.237.137.246",
             port: 36712,
             password: "a723d54c10a36c24d5e4b042",
             "ip-version": "ipv4"
