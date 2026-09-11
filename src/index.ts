@@ -181,7 +181,7 @@ global-client-fingerprint: chrome
 proxies:
   - name: 🇺🇸 美西-REALITY
     type: vless
-    server: 20.228.81.252
+    server: 20.237.137.246
     port: 57968
     uuid: 115dd6c9-dba6-4c3e-9e43-89acfea74610
     network: tcp
@@ -198,7 +198,7 @@ proxies:
       short-id: ""
   - name: 🇺🇸 美西-HY2
     type: hysteria2
-    server: 20.228.81.252
+    server: 20.237.137.246
     port: 36712
     password: a723d54c10a36c24d5e4b042
     udp: true
@@ -208,30 +208,12 @@ proxies:
       - h3
     skip-cert-verify: true
     handshake-timeout: 30
-  - name: 🇺🇸 中部-REALITY
-    type: vless
-    server: 2603:1030:7:6::41
-    port: 52839
-    uuid: afe80ef8-f8f5-456c-b8df-b4235e7c4b60
-    network: tcp
-    tls: true
-    udp: true
-    ip-version: ipv6
-    flow: xtls-rprx-vision
-    encryption: none
-    packet-encoding: xudp
-    servername: www.ebay.com
-    client-fingerprint: chrome
-    reality-opts:
-      public-key: 9tSQHVNii662_X_JojEIWkMsw1JPnDfKuRGDno7ZCyo
-      short-id: ""
 proxy-groups:
   - name: 🌍 全局出口
     type: select
     proxies:
       - 🇺🇸 美西-REALITY
       - 🇺🇸 美西-HY2
-      - 🇺🇸 中部-REALITY
 rule-providers:
   reject:
     type: http
@@ -391,6 +373,7 @@ rules:
   - DOMAIN-SUFFIX,bing.com,DIRECT
   - DOMAIN-SUFFIX,bing.net,DIRECT
   - DOMAIN-SUFFIX,bingapis.com,DIRECT
+  - DOMAIN-SUFFIX,hybgzs.com,DIRECT
   - DOMAIN-KEYWORD,ipinfo,🌍 全局出口
   - RULE-SET,category-ai-chat-!cn,🌍 全局出口
   - DOMAIN-SUFFIX,openai.com,🌍 全局出口
