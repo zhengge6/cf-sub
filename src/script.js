@@ -175,18 +175,6 @@
         "dialer-proxy": frontGroupName
     });
 
-    const centralusExitName = "🇺🇸 中部出口";
-    config.proxies.push({
-        name: centralusExitName,
-        type: "socks5",
-        server: "2603:1030:7:6::41",
-        port: 41025,
-        username: socksUsername,
-        password: socksPassword,
-        udp: true,
-        "ip-version": "ipv6",
-        "dialer-proxy": frontGroupName
-    });
 
     // 前置池 = 机场全部节点 + 自建 REALITY/HY2 直连
     const frontProxyNames = unique([
@@ -243,8 +231,7 @@
             type: "select",
             proxies: unique([
                 frontGroupName,
-                westusExitName,
-                centralusExitName
+                westusExitName
             ])
         },
         {
@@ -252,7 +239,6 @@
             type: "select",
             proxies: unique([
                 westusExitName,
-                centralusExitName,
                 finalExitGroupName,
                 "DIRECT"
             ])
