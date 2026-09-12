@@ -191,7 +191,7 @@ proxies:
     flow: xtls-rprx-vision
     encryption: none
     packet-encoding: xudp
-    servername: www.sony.com
+    servername: conesdlc.bristlecone.com
     client-fingerprint: chrome
     reality-opts:
       public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
