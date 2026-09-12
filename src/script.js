@@ -163,6 +163,7 @@
 
     // 第二落点：美西 socks5 走 IPv4（前置常无 IPv6，dialer-proxy 用 v4 更稳）
     const westusExitName = "🇺🇸 美西出口";
+    // 美西出口直连 SOCKS（不经 dialer-proxy）：机场前置常封 41025，链式第二跳会超时；直连已实测可出网
     config.proxies.push({
         name: westusExitName,
         type: "socks5",
@@ -171,8 +172,7 @@
         username: socksUsername,
         password: socksPassword,
         udp: true,
-        "ip-version": "ipv4",
-        "dialer-proxy": frontGroupName
+        "ip-version": "ipv4"
     });
 
 
