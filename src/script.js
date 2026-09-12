@@ -1,4 +1,4 @@
-function main(config, profileName) {
+﻿function main(config, profileName) {
     if (!Array.isArray(config.proxies)) config.proxies = [];
 
     const frontGroupName = "🚀 前置节点";
@@ -161,17 +161,17 @@ function main(config, profileName) {
         }
     );
 
-    // 第二落点：美西 socks5 走 IPv6（圣何塞只保留 v6 + socks5 落地）
+    // 第二落点：美西 socks5 走 IPv4（前置常无 IPv6，dialer-proxy 用 v4 更稳）
     const westusExitName = "🇺🇸 美西出口";
     config.proxies.push({
         name: westusExitName,
         type: "socks5",
-        server: "2603:1030:a04:27::83",
+        server: "20.237.137.246",
         port: 41025,
         username: socksUsername,
         password: socksPassword,
         udp: true,
-        "ip-version": "ipv6",
+        "ip-version": "ipv4",
         "dialer-proxy": frontGroupName
     });
 
