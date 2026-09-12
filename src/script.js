@@ -127,7 +127,7 @@
             server: "20.237.137.246",
             port: 57968,
             uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
-            servername: "www.apple.com",
+            servername: "www.sony.com",
             "ip-version": "ipv4",
             "reality-opts": {
                 "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0",
