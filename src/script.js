@@ -228,10 +228,10 @@ function main(config, profileName) {
                 }
               ]),
         {
-            // 仅机场源节点；禁止混入 20.237 美西，否则会与机场 IPv6 双出口被 Google 风控
+            // Google/Gemini 钉死美西出口，保证同会话单一出口 IP（避免机场 IPv6 与 Azure 双出口风控）
             name: googleGroupName,
             type: "select",
-            proxies: sourceProxyNames.length ? sourceProxyNames : ["DIRECT"]
+            proxies: [westusExitName]
         },
         {
             name: finalExitGroupName,
@@ -377,7 +377,7 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,linux.do,${frontGroupName}`,
 
         `DOMAIN-KEYWORD,ipinfo,${finalExitGroupName}`,
-        // Google + Gemini 全家桶 → 🔍 Google（仅机场）；须在 AI 规则集之前，避免被送进 Azure 链式
+        // Google + Gemini 全家桶 → 🔍 Google（固定美西）；须在 AI 规则集之前，避免和其它组混出口
         `AND,((NETWORK,UDP),(RULE-SET,google)),REJECT`,
         `PROCESS-NAME,Antigravity.app,${googleGroupName}`,
         `PROCESS-NAME,Antigravity,${googleGroupName}`,
