@@ -1,10 +1,12 @@
-﻿function main(config, profileName) {
+function main(config, profileName) {
     if (!Array.isArray(config.proxies)) config.proxies = [];
 
     const frontGroupName = "🚀 前置节点";
     const finalExitGroupName = "🌍 全局出口";
     const aiGroupName = "🤖 AI服务-链式";
     const mailGroupName = "✉️ 邮件服务";
+    // Google/Gemini 专用组：只含机场节点，不含美西 REALITY/HY2，避免双出口风控
+    const googleGroupName = "🔍 Google";
     const homeExitName = "🇯🇵 日本出口";
 
     const processNames = [
@@ -51,7 +53,6 @@
         "ghcr.io",
         "pypi.org",
         "files.pythonhosted.org",
-        "gstatic.com",
         "apple.com",
         "cdn-apple.com"
     ];
@@ -227,6 +228,12 @@
                 }
               ]),
         {
+            // 仅机场源节点；禁止混入 20.237 美西，否则会与机场 IPv6 双出口被 Google 风控
+            name: googleGroupName,
+            type: "select",
+            proxies: sourceProxyNames.length ? sourceProxyNames : ["DIRECT"]
+        },
+        {
             name: finalExitGroupName,
             type: "select",
             proxies: unique([
@@ -370,28 +377,42 @@
         `DOMAIN-SUFFIX,linux.do,${frontGroupName}`,
 
         `DOMAIN-KEYWORD,ipinfo,${finalExitGroupName}`,
-        // Antigravity / Gemini → 走前置/机场（避开 Azure 机房 IP 的 location 限制）
-        `PROCESS-NAME,Antigravity.app,${frontGroupName}`,
-        `PROCESS-NAME,Antigravity,${frontGroupName}`,
-        `PROCESS-NAME,com.google.antigravity,${frontGroupName}`,
-        `PROCESS-NAME,Gemini.app,${frontGroupName}`,
-        `PROCESS-NAME,Gemini,${frontGroupName}`,
-        `PROCESS-NAME,com.google.GeminiMacOS,${frontGroupName}`,
-        `PROCESS-NAME,Antigravity IDE.app,${frontGroupName}`,
-        `PROCESS-NAME,Antigravity IDE,${frontGroupName}`,
-        `PROCESS-NAME,com.google.antigravity-ide,${frontGroupName}`,
-        `PROCESS-NAME,language_server_macos_arm,${frontGroupName}`,
-        `PROCESS-NAME,language_server_macos_x64,${frontGroupName}`,
-                `PROCESS-NAME,language_server,${frontGroupName}`,
-        `PROCESS-NAME,language_server.exe,${frontGroupName}`,
-        `PROCESS-NAME,language_server_windows,${frontGroupName}`,
-        `PROCESS-NAME,language_server_windows_x64.exe,${frontGroupName}`,
-        `PROCESS-NAME,Antigravity.exe,${frontGroupName}`,
-        `PROCESS-NAME,Antigravity IDE.exe,${frontGroupName}`,
-        `PROCESS-NAME,agy.exe,${frontGroupName}`,
-        `PROCESS-NAME,node.exe,${frontGroupName}`,
+        // Google + Gemini 全家桶 → 🔍 Google（仅机场）；须在 AI 规则集之前，避免被送进 Azure 链式
+        `AND,((NETWORK,UDP),(RULE-SET,google)),REJECT`,
+        `PROCESS-NAME,Antigravity.app,${googleGroupName}`,
+        `PROCESS-NAME,Antigravity,${googleGroupName}`,
+        `PROCESS-NAME,com.google.antigravity,${googleGroupName}`,
+        `PROCESS-NAME,Gemini.app,${googleGroupName}`,
+        `PROCESS-NAME,Gemini,${googleGroupName}`,
+        `PROCESS-NAME,com.google.GeminiMacOS,${googleGroupName}`,
+        `PROCESS-NAME,Antigravity IDE.app,${googleGroupName}`,
+        `PROCESS-NAME,Antigravity IDE,${googleGroupName}`,
+        `PROCESS-NAME,com.google.antigravity-ide,${googleGroupName}`,
+        `PROCESS-NAME,language_server_macos_arm,${googleGroupName}`,
+        `PROCESS-NAME,language_server_macos_x64,${googleGroupName}`,
+        `PROCESS-NAME,language_server,${googleGroupName}`,
+        `PROCESS-NAME,language_server.exe,${googleGroupName}`,
+        `PROCESS-NAME,language_server_windows,${googleGroupName}`,
+        `PROCESS-NAME,language_server_windows_x64.exe,${googleGroupName}`,
+        `PROCESS-NAME,Antigravity.exe,${googleGroupName}`,
+        `PROCESS-NAME,Antigravity IDE.exe,${googleGroupName}`,
+        `PROCESS-NAME,agy.exe,${googleGroupName}`,
+        `PROCESS-NAME,node.exe,${googleGroupName}`,
+        `DOMAIN-SUFFIX,googleapis.com,${googleGroupName}`,
+        `DOMAIN-SUFFIX,gstatic.com,${googleGroupName}`,
+        `DOMAIN-SUFFIX,googleusercontent.com,${googleGroupName}`,
+        `DOMAIN-SUFFIX,ggpht.com,${googleGroupName}`,
+        `DOMAIN-SUFFIX,withgoogle.com,${googleGroupName}`,
+        `DOMAIN-SUFFIX,google.com,${googleGroupName}`,
+        `DOMAIN,gemini.google.com,${googleGroupName}`,
+        `DOMAIN,aistudio.google.com,${googleGroupName}`,
+        `DOMAIN,makersuite.google.com,${googleGroupName}`,
+        `DOMAIN,generativelanguage.googleapis.com,${googleGroupName}`,
+        `DOMAIN,daily-cloudcode-pa.googleapis.com,${googleGroupName}`,
+        `DOMAIN,oauth2.googleapis.com,${googleGroupName}`,
+        `RULE-SET,google,${googleGroupName}`,
 
-        // AI 类目统一走 AI 链式组（mrs 数据自动覆盖 claude/openai/gemini/poe/grok 等）
+        // AI 类目统一走 AI 链式组（OpenAI/Claude 等；Gemini 已在上方截获）
         `RULE-SET,${aiChatSetName},${aiGroupName}`,
         `DOMAIN-SUFFIX,openai.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,chatgpt.com,${aiGroupName}`,
@@ -400,12 +421,6 @@
         `DOMAIN-SUFFIX,anthropic.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,claude.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,claude.ai,${aiGroupName}`,
-        `DOMAIN,gemini.google.com,${frontGroupName}`,
-        `DOMAIN,aistudio.google.com,${frontGroupName}`,
-        `DOMAIN,makersuite.google.com,${frontGroupName}`,
-                `DOMAIN,generativelanguage.googleapis.com,${frontGroupName}`,
-        `DOMAIN,daily-cloudcode-pa.googleapis.com,${frontGroupName}`,
-        `DOMAIN,oauth2.googleapis.com,${frontGroupName}`,
         `DOMAIN-SUFFIX,perplexity.ai,${aiGroupName}`,
         `DOMAIN-SUFFIX,poe.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,x.ai,${aiGroupName}`,
@@ -451,7 +466,7 @@
         "RULE-SET,direct,DIRECT",
         "RULE-SET,cncidr,DIRECT",
         "GEOIP,CN,DIRECT",
-        `RULE-SET,google,${finalExitGroupName}`,
+        // google 已在上方统一进 googleGroupName
         `RULE-SET,icloud,${finalExitGroupName}`,
         `RULE-SET,apple,${finalExitGroupName}`,
         `RULE-SET,gfw,${finalExitGroupName}`,
