@@ -228,10 +228,10 @@ function main(config, profileName) {
                 }
               ]),
         {
-            // Google/Gemini 钉死美西出口，保证同会话单一出口 IP（避免机场 IPv6 与 Azure 双出口风控）
+            // Google/Gemini 钉死美西 HY2（与「美西出口」SOCKS5 分离；同机 IPv4，避免双出口风控）
             name: googleGroupName,
             type: "select",
-            proxies: [westusExitName]
+            proxies: [westusHy2Name]
         },
         {
             name: finalExitGroupName,
