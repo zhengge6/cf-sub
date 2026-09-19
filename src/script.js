@@ -172,7 +172,7 @@ function main(config, profileName) {
         port: 41025,
         username: socksUsername,
         password: socksPassword,
-        udp: true,
+        udp: false,
         "ip-version": "ipv4"
     });
 
