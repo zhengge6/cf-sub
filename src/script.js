@@ -156,9 +156,11 @@ function main(config, profileName) {
             ...hy2ClientBase,
             name: westusHy2Name,
             server: "20.237.137.246",
-            port: 36712,
+            port: 443,
             password: "a723d54c10a36c24d5e4b042",
-            "ip-version": "ipv4"
+            "ip-version": "ipv4",
+            obfs: "salamander",
+            "obfs-password": "3afbc4632a22032f43d6f0e25facd894"
         }
     );
 
@@ -458,7 +460,7 @@ function main(config, profileName) {
         `RULE-SET,telegramcidr,${finalExitGroupName},no-resolve`,
 
         // Kraken 应用放行（其遥测域名会被 reject 规则集误杀）
-        "PROCESS-NAME,com.kraken.pay.app,🤖 AI服务",
+        `PROCESS-NAME,com.kraken.pay.app,${aiGroupName}`,
 
         "RULE-SET,reject,REJECT",
         "RULE-SET,private,DIRECT",
