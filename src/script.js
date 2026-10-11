@@ -3,7 +3,7 @@ function main(config, profileName) {
 
     const frontGroupName = "🚀 前置节点";
     const finalExitGroupName = "🌍 全局出口";
-    const aiGroupName = "🤖 AI服务-链式";
+    const aiGroupName = "🤖 AI服务";
     const mailGroupName = "✉️ 邮件服务";
     // Google/Gemini 专用组：钉死美西 VLESS/REALITY，不含 SOCKS5/HY2，避免双出口风控
     const googleGroupName = "🔍 Google";
@@ -242,12 +242,12 @@ function main(config, profileName) {
             ])
         },
         {
+            // Claude/GPT 等直连美西，不走机场链式；Google/Gemini 仍走 googleGroupName
             name: aiGroupName,
             type: "select",
             proxies: unique([
-                westusExitName,
-                finalExitGroupName,
-                "DIRECT"
+                westusNodeName,
+                westusHy2Name
             ])
         },
         {
@@ -412,7 +412,7 @@ function main(config, profileName) {
         `DOMAIN,oauth2.googleapis.com,${googleGroupName}`,
         `RULE-SET,google,${googleGroupName}`,
 
-        // AI 类目统一走 AI 链式组（OpenAI/Claude 等；Gemini 已在上方截获）
+        // AI 类目统一走 AI 组（直连美西 REALITY/HY2；Gemini/Google 已在上方截获）
         `RULE-SET,${aiChatSetName},${aiGroupName}`,
         `DOMAIN-SUFFIX,openai.com,${aiGroupName}`,
         `DOMAIN-SUFFIX,chatgpt.com,${aiGroupName}`,
@@ -458,7 +458,7 @@ function main(config, profileName) {
         `RULE-SET,telegramcidr,${finalExitGroupName},no-resolve`,
 
         // Kraken 应用放行（其遥测域名会被 reject 规则集误杀）
-        "PROCESS-NAME,com.kraken.pay.app,🤖 AI服务-链式",
+        "PROCESS-NAME,com.kraken.pay.app,🤖 AI服务",
 
         "RULE-SET,reject,REJECT",
         "RULE-SET,private,DIRECT",
