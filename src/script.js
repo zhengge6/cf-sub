@@ -1,11 +1,11 @@
-﻿function main(config, profileName) {
+function main(config, profileName) {
     if (!Array.isArray(config.proxies)) config.proxies = [];
 
     const frontGroupName = "🚀 前置节点";
     const finalExitGroupName = "🌍 全局出口";
     const aiGroupName = "🤖 AI服务-链式";
     const mailGroupName = "✉️ 邮件服务";
-    // Google/Gemini 专用组：只含机场节点，不含美西 REALITY/HY2，避免双出口风控
+    // Google/Gemini 专用组：钉死美西 VLESS/REALITY，不含 SOCKS5/HY2，避免双出口风控
     const googleGroupName = "🔍 Google";
     const homeExitName = "🇯🇵 日本出口";
 
@@ -228,10 +228,10 @@
                 }
               ]),
         {
-            // Google/Gemini 钉死美西 HY2（与「美西出口」SOCKS5 分离；同机 IPv4，避免双出口风控）
+            // Google/Gemini 钉死美西 VLESS/REALITY（与「美西出口」SOCKS5、HY2 分离；同机 IPv4，避免双出口风控）
             name: googleGroupName,
             type: "select",
-            proxies: [westusHy2Name]
+            proxies: [westusNodeName]
         },
         {
             name: finalExitGroupName,
