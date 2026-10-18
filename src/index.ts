@@ -244,7 +244,7 @@ proxies:
     flow: xtls-rprx-vision
     encryption: none
     packet-encoding: xudp
-    servername: conesdlc.bristlecone.com
+    servername: home.tatou.works
     client-fingerprint: chrome
     reality-opts:
       public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
