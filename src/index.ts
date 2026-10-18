@@ -252,7 +252,7 @@ proxies:
   - name: 🇺🇸 美西-HY2
     type: hysteria2
     server: 20.237.137.246
-    port: 36712
+    port: 443
     password: a723d54c10a36c24d5e4b042
     udp: true
     ip-version: ipv4
@@ -261,6 +261,8 @@ proxies:
       - h3
     skip-cert-verify: true
     handshake-timeout: 30
+    obfs: salamander
+    obfs-password: 3afbc4632a22032f43d6f0e25facd894
 proxy-groups:
   - name: 🌍 全局出口
     type: select
