@@ -248,7 +248,7 @@ proxies:
     client-fingerprint: chrome
     reality-opts:
       public-key: jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0
-      short-id: ""
+      short-id: ee84f021716c334f
   - name: 🇺🇸 美西-HY2
     type: hysteria2
     server: 20.237.137.246
