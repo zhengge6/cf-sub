@@ -267,22 +267,88 @@ function main(config, profileName) {
     config["tcp-concurrent"] = true;
     config["find-process-mode"] = "always";
     config.ipv6 = true;
-    if (!config.dns || typeof config.dns !== "object") config.dns = { enable: true };
-    config.dns.ipv6 = true;
     if (!config["global-client-fingerprint"]) {
         config["global-client-fingerprint"] = "chrome";
     }
-    // TLS/HTTP 嗅探：把 SNI 还原成域名参与分流，raw-IP 连接不再只靠 GeoIP 猜
-    if (!config.sniffer) {
-        config.sniffer = {
-            enable: true,
-            "parse-pure-ip": true,
-            sniff: {
-                TLS: { ports: [443, 8443] },
-                HTTP: { ports: [80, 8080] }
-            }
-        };
-    }
+
+    // DNS：补齐 fake-ip 与过滤。oauth2.googleapis.com 解析到 198.18.x.x 是正常假 IP；
+    // 若出现 dial tcp 198.18.0.x:443 refused，说明流量没进 mihomo（常见：未开 TUN / 未管理员）。
+    // 不把 googleapis/google 放进 fake-ip-filter，否则真 IP 直连在国内常被墙，且域名规则易失效。
+    const prevDns = (config.dns && typeof config.dns === "object") ? config.dns : {};
+    const prevPolicy = (prevDns["nameserver-policy"] && typeof prevDns["nameserver-policy"] === "object")
+        ? { ...prevDns["nameserver-policy"] }
+        : {};
+    const lanFakeIpFilter = [
+        "*.lan",
+        "*.local",
+        "*.localhost",
+        "+.lan",
+        "+.local",
+        "+.localhost",
+        "time.*.com",
+        "ntp.*.com",
+        "+.market.xiaomi.com",
+        "localhost.ptlogin2.qq.com",
+        "dns.msftncsi.com",
+        "www.msftconnecttest.com",
+        "www.msftncsi.com"
+    ];
+    const prevFilter = Array.isArray(prevDns["fake-ip-filter"]) ? prevDns["fake-ip-filter"] : [];
+    // 若上游/客户端误把 * 或 google 放进 filter，会破坏假 IP 分流；此处强制去掉
+    const scrubbedFilter = prevFilter.filter(item => {
+        const s = String(item || "").toLowerCase();
+        if (!s || s === "*") return false;
+        if (s.includes("google")) return false;
+        if (s.includes("gstatic")) return false;
+        if (s.includes("googleapis")) return false;
+        return true;
+    });
+    config.dns = {
+        ...prevDns,
+        enable: true,
+        ipv6: true,
+        "enhanced-mode": prevDns["enhanced-mode"] || "fake-ip",
+        "fake-ip-range": prevDns["fake-ip-range"] || "198.18.0.1/16",
+        "use-hosts": prevDns["use-hosts"] !== false,
+        "respect-rules": false,
+        "fake-ip-filter": unique([...lanFakeIpFilter, ...scrubbedFilter]),
+        "default-nameserver": prevDns["default-nameserver"] || [
+            "223.5.5.5",
+            "119.29.29.29"
+        ],
+        nameserver: prevDns.nameserver || [
+            "https://dns.cloudflare.com/dns-query",
+            "https://dns.google/dns-query",
+            "tls://8.8.8.8"
+        ],
+        "proxy-server-nameserver": prevDns["proxy-server-nameserver"] || [
+            "223.5.5.5",
+            "119.29.29.29"
+        ],
+        "nameserver-policy": {
+            ...prevPolicy,
+            "+.googleapis.com": ["https://dns.google/dns-query", "https://dns.cloudflare.com/dns-query"],
+            "+.google.com": ["https://dns.google/dns-query", "https://dns.cloudflare.com/dns-query"],
+            "+.gstatic.com": ["https://dns.google/dns-query", "https://dns.cloudflare.com/dns-query"],
+            "+.googleusercontent.com": ["https://dns.google/dns-query", "https://dns.cloudflare.com/dns-query"]
+        }
+    };
+    if (!config.profile || typeof config.profile !== "object") config.profile = {};
+    config.profile["store-selected"] = true;
+    config.profile["store-fake-ip"] = true;
+
+    // TLS/HTTP 嗅探：force-dns-mapping 让假 IP 连接仍按域名命中 Google 规则
+    config.sniffer = {
+        enable: true,
+        "parse-pure-ip": true,
+        "force-dns-mapping": true,
+        "override-destination": true,
+        sniff: {
+            TLS: { ports: [443, 8443] },
+            HTTP: { ports: [80, 8080, 8000, 8880] }
+        },
+        ...(config.sniffer && typeof config.sniffer === "object" ? {} : {})
+    };
 
     delete config["proxy-providers"];
     delete config["sub-rules"];
@@ -379,8 +445,13 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,linux.do,${frontGroupName}`,
 
         `DOMAIN-KEYWORD,ipinfo,${finalExitGroupName}`,
-        // Google + Gemini 全家桶 → 🔍 Google（固定美西）；须在 AI 规则集之前，避免和其它组混出口
+        // Google + Gemini 全家桶 → 🔍 Google（固定美西 REALITY，不链式、不 SOCKS）；须在 AI 规则集之前
         `AND,((NETWORK,UDP),(RULE-SET,google)),REJECT`,
+        // Windows「Google 账号设置」/OAuth 进程兜底（仍建议开 TUN，否则假 IP 会 refused）
+        `PROCESS-NAME,SystemSettings.exe,${googleGroupName}`,
+        `PROCESS-NAME,SystemSettings,${googleGroupName}`,
+        `PROCESS-NAME,AccountAccessor.exe,${googleGroupName}`,
+        `PROCESS-NAME,GoogleUpdate.exe,${googleGroupName}`,
         `PROCESS-NAME,Antigravity.app,${googleGroupName}`,
         `PROCESS-NAME,Antigravity,${googleGroupName}`,
         `PROCESS-NAME,com.google.antigravity,${googleGroupName}`,
@@ -406,12 +477,18 @@ function main(config, profileName) {
         `DOMAIN-SUFFIX,ggpht.com,${googleGroupName}`,
         `DOMAIN-SUFFIX,withgoogle.com,${googleGroupName}`,
         `DOMAIN-SUFFIX,google.com,${googleGroupName}`,
+        `DOMAIN-SUFFIX,googlemail.com,${googleGroupName}`,
+        `DOMAIN-SUFFIX,googlevideo.com,${googleGroupName}`,
+        `DOMAIN,accounts.google.com,${googleGroupName}`,
+        `DOMAIN,myaccount.google.com,${googleGroupName}`,
+        `DOMAIN,oauth2.googleapis.com,${googleGroupName}`,
+        `DOMAIN,www.googleapis.com,${googleGroupName}`,
+        `DOMAIN,oauthaccountmanager.googleapis.com,${googleGroupName}`,
         `DOMAIN,gemini.google.com,${googleGroupName}`,
         `DOMAIN,aistudio.google.com,${googleGroupName}`,
         `DOMAIN,makersuite.google.com,${googleGroupName}`,
         `DOMAIN,generativelanguage.googleapis.com,${googleGroupName}`,
         `DOMAIN,daily-cloudcode-pa.googleapis.com,${googleGroupName}`,
-        `DOMAIN,oauth2.googleapis.com,${googleGroupName}`,
         `RULE-SET,google,${googleGroupName}`,
 
         // AI 类目统一走 AI 组（直连美西 REALITY/HY2；Gemini/Google 已在上方截获）
