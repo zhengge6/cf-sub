@@ -303,34 +303,47 @@ function main(config, profileName) {
         if (s.includes("googleapis")) return false;
         return true;
     });
+    // 国内线路 + TUN 稳定版 DNS：bootstrap/节点解析/直连全用纯 IP 的 UDP，不依赖先解析域名的 DoH
+    // （doh.pub 这类域名式 DoH 在 TUN 下常出现 context deadline exceeded，导致全部 DNS 失败）
+    const cnUdpDns = ["223.5.5.5", "119.29.29.29"];
+    // Google 域名经 🔍 Google（美西 REALITY）去海外 DoH 查询，IP 形式免 bootstrap
+    const googleDns = [
+        `https://8.8.8.8/dns-query#${googleGroupName}`,
+        `https://1.1.1.1/dns-query#${googleGroupName}`
+    ];
+    // 机场自带的 nameserver-policy（如其自有域名）保留；其余上游 DNS 字段全部覆盖
+    const keptPolicy = {};
+    Object.keys(prevPolicy).forEach(key => {
+        if (/google|gstatic/i.test(key)) return;
+        keptPolicy[key] = prevPolicy[key];
+    });
     config.dns = {
-        ...prevDns,
         enable: true,
         ipv6: true,
-        "enhanced-mode": prevDns["enhanced-mode"] || "fake-ip",
-        "fake-ip-range": prevDns["fake-ip-range"] || "198.18.0.1/16",
-        "use-hosts": prevDns["use-hosts"] !== false,
-        "respect-rules": false,
+        "enhanced-mode": "fake-ip",
+        "fake-ip-range": "198.18.0.1/16",
+        "fake-ip-filter-mode": "blacklist",
         "fake-ip-filter": unique([...lanFakeIpFilter, ...scrubbedFilter]),
-        "default-nameserver": prevDns["default-nameserver"] || [
-            "223.5.5.5",
-            "119.29.29.29"
-        ],
-        nameserver: prevDns.nameserver || [
-            "https://dns.cloudflare.com/dns-query",
-            "https://dns.google/dns-query",
-            "tls://8.8.8.8"
-        ],
-        "proxy-server-nameserver": prevDns["proxy-server-nameserver"] || [
-            "223.5.5.5",
-            "119.29.29.29"
+        "use-hosts": true,
+        "use-system-hosts": true,
+        "respect-rules": false,
+        "prefer-h3": false,
+        "cache-algorithm": "arc",
+        "default-nameserver": cnUdpDns,
+        "proxy-server-nameserver": cnUdpDns,
+        "direct-nameserver": cnUdpDns,
+        "direct-nameserver-follow-policy": false,
+        nameserver: [
+            "https://223.5.5.5/dns-query",
+            "https://1.12.12.12/dns-query",
+            ...cnUdpDns
         ],
         "nameserver-policy": {
-            ...prevPolicy,
-            "+.googleapis.com": ["https://dns.google/dns-query", "https://dns.cloudflare.com/dns-query"],
-            "+.google.com": ["https://dns.google/dns-query", "https://dns.cloudflare.com/dns-query"],
-            "+.gstatic.com": ["https://dns.google/dns-query", "https://dns.cloudflare.com/dns-query"],
-            "+.googleusercontent.com": ["https://dns.google/dns-query", "https://dns.cloudflare.com/dns-query"]
+            ...keptPolicy,
+            "+.googleapis.com": googleDns,
+            "+.google.com": googleDns,
+            "+.gstatic.com": googleDns,
+            "+.googleusercontent.com": googleDns
         }
     };
     if (!config.profile || typeof config.profile !== "object") config.profile = {};
