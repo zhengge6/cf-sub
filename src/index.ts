@@ -178,6 +178,59 @@ ipv6: true
 unified-delay: true
 tcp-concurrent: true
 global-client-fingerprint: chrome
+find-process-mode: always
+profile:
+  store-selected: true
+  store-fake-ip: true
+sniffer:
+  enable: true
+  parse-pure-ip: true
+  force-dns-mapping: true
+  override-destination: true
+  sniff:
+    TLS:
+      ports: [443, 8443]
+    HTTP:
+      ports: [80, 8080, 8000, 8880]
+dns:
+  enable: true
+  ipv6: true
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - "*.lan"
+    - "*.local"
+    - "*.localhost"
+    - "+.lan"
+    - "+.local"
+    - "+.localhost"
+    - "time.*.com"
+    - "ntp.*.com"
+    - "+.market.xiaomi.com"
+    - localhost.ptlogin2.qq.com
+    - dns.msftncsi.com
+    - www.msftconnecttest.com
+    - www.msftncsi.com
+  use-hosts: true
+  use-system-hosts: true
+  respect-rules: false
+  prefer-h3: false
+  cache-algorithm: arc
+  default-nameserver: [223.5.5.5, 119.29.29.29]
+  proxy-server-nameserver: [223.5.5.5, 119.29.29.29]
+  direct-nameserver: [223.5.5.5, 119.29.29.29]
+  direct-nameserver-follow-policy: false
+  nameserver:
+    - https://223.5.5.5/dns-query
+    - https://1.12.12.12/dns-query
+    - 223.5.5.5
+    - 119.29.29.29
+  nameserver-policy:
+    "+.googleapis.com": ["https://8.8.8.8/dns-query#🌍 全局出口", "https://1.1.1.1/dns-query#🌍 全局出口"]
+    "+.google.com": ["https://8.8.8.8/dns-query#🌍 全局出口", "https://1.1.1.1/dns-query#🌍 全局出口"]
+    "+.gstatic.com": ["https://8.8.8.8/dns-query#🌍 全局出口", "https://1.1.1.1/dns-query#🌍 全局出口"]
+    "+.googleusercontent.com": ["https://8.8.8.8/dns-query#🌍 全局出口", "https://1.1.1.1/dns-query#🌍 全局出口"]
 proxies:
   - name: 🇺🇸 美西-REALITY
     type: vless
