@@ -128,7 +128,7 @@ function main(config, profileName) {
             server: "20.237.137.246",
             port: 443,
             uuid: "115dd6c9-dba6-4c3e-9e43-89acfea74610",
-            servername: "conesdlc.bristlecone.com",
+            servername: "home.tatou.works",
             "ip-version": "ipv4",
             "reality-opts": {
                 "public-key": "jCmkxkAI6WpShwRODJvNnXb322wZR5OHc8tSZh_Xkx0",
